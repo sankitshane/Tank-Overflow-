@@ -1,0 +1,35 @@
+{
+  "name": "tankoverflow",
+  "version": "1.0.0",
+  "description": "community for fish keepers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "python ./dest/project.py"
+  },
+  "author": "Sankit Acharya",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-preset-env": "^1.5.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babelify": "^7.3.0",
+    "browserify": "^14.4.0",
+    "concurrently": "^3.4.0",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.0.0",
+    "gulp-babel": "^6.1.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-eslint": "^3.0.1",
+    "gulp-install": "^1.1.0",
+    "gulp-pug": "^3.3.0",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-util": "^3.0.8",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "requirejs": "^2.3.3",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {}
+}
