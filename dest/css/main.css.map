@@ -1,1 +1,1 @@
-{"version":3,"sources":["main.sass"],"names":[],"mappings":"AAAA,GACE,YAAa,CAAI,GAGjB,SAAU,CAAI,MAGd,WAAY,CAAI","file":"main.css","sourcesContent":["h2 {\n  color: yellow; }\n\nh1 {\n  color: red; }\n\n#root {\n  height: 20px; }\n"]}
+{"version":3,"sources":["main.sass"],"names":[],"mappings":"AAAA,MACE,WAAY,CAAI","file":"main.css","sourcesContent":["#root {\n  height: 20px; }\n"]}

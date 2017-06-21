@@ -20819,7 +20819,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _reactDom2.default.render(_react2.default.createElement(
   'h1',
   null,
-  'Sankit you fine Bro'
+  'Hello World!'
 ), document.getElementById('root'));
 
 },{"react":182,"react-dom":29}]},{},[183]);
