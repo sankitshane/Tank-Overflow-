@@ -1,0 +1,19 @@
+extends main
+
+block content
+  | {% if type == 'new' %}
+  h2 you have about to make a new post
+  | {% endif %}
+  
+  | {% if type == 'view' %}
+  h2 you are looking at specific post no. {{ post_id }}
+  | {% endif %}
+
+  | {% if type == 'edit' %}
+  h2 you are going to edit post no. {{ post_id }}
+  | {% endif %}
+
+  | {% if type == 'delete' %}
+  h2 you are going to delete post no. {{ post_id }}
+  | {% endif %}
+  

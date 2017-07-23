@@ -12,29 +12,35 @@ from pymongo import MongoClient
 
 app = Flask(__name__, static_url_path='', static_folder='')
 
+connection = pymongo.MongoClient("mongodb://localhost")
+
 ##Feed Routes
 @app.route('/')
 @app.route('/post')
 def post():
-    return render_template('index1.html')
+    db = connection.posthub
+    posts = db.post
+    query = {}
+    cursor = posts.find_one()
+    return render_template('index.html',cursor = cursor)
 
 @app.route('/newpost', methods=['GET', 'POST'])
 def newpost():
-    return "add a new post"
+    return render_template('newpost.html', type = "new")
 
 @app.route('/post/<string:post_id>')
 def sub_post(post_id):
-    return "specific post "+ post_id
+    return render_template('newpost.html', type = "view", post_id = post_id)
 
 @app.route('/post/<string:post_id>/edit', methods=['GET', 'POST'])
 def edit_post(post_id):
-    return "edit post " + post_id
+    return render_template('newpost.html', type = "edit", post_id = post_id)
 
 @app.route('/post/<string:post_id>/delete', methods=['GET', 'POST'])
 def delete_post(post_id):
-    return "delete post "+ post_id
+    return render_template('newpost.html', type = "delete", post_id = post_id)
 
-##Question Route
+##Question Rout
 @app.route('/question')
 def question():
     return "Question page"

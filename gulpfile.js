@@ -28,9 +28,7 @@ gulp.task('eslint', function() {
 
 gulp.task('views', function() {
     gulp.src('./src/views/*.pug')
-        .pipe(pug({
-            outputStyle: 'compressed'
-        }).on('error', sass.logError))
+        .pipe(pug({outputStyle: 'compressed'}).on('error', sass.logError))
         .pipe(gulp.dest('./dest/templates'))
 });
 
