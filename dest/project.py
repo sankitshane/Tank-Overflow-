@@ -24,42 +24,42 @@ def post():
     cursor = posts.find_one()
     return render_template('index.html',cursor = cursor)
 
-@app.route('/newpost', methods=['GET', 'POST'])
+@app.route('/post', methods=['GET', 'POST'])
 def newpost():
-    return render_template('newpost.html', type = "new")
+    return render_template('post.html', type = "new")
 
 @app.route('/post/<string:post_id>')
 def sub_post(post_id):
-    return render_template('newpost.html', type = "view", post_id = post_id)
+    return render_template('post.html', type = "view", post_id = post_id)
 
 @app.route('/post/<string:post_id>/edit', methods=['GET', 'POST'])
 def edit_post(post_id):
-    return render_template('newpost.html', type = "edit", post_id = post_id)
+    return render_template('post.html', type = "edit", post_id = post_id)
 
 @app.route('/post/<string:post_id>/delete', methods=['GET', 'POST'])
 def delete_post(post_id):
-    return render_template('newpost.html', type = "delete", post_id = post_id)
+    return render_template('post.html', type = "delete", post_id = post_id)
 
 ##Question Rout
 @app.route('/question')
 def question():
-    return "Question page"
+    return render_template('question.html')
 
 @app.route('/newquestion', methods=['GET', 'POST'])
 def newQuestion():
-    return "Ask new question"
+    return render_template('question.html', type = "new")
 
 @app.route('/question/<string:question_id>')
 def sub_question(question_id):
-    return "specific question "+question_id
+    return render_template('question.html', type = "view", question_id = question_id)
 
 @app.route('/question/<string:question_id>/edit', methods=['GET', 'POST'])
 def edit_question(question_id):
-    return "edit question "+ question_id
+    return render_template('question.html', type = "edit", question_id = question_id)
 
 @app.route('/question/<string:question_id>/delete', methods=['GET', 'POST'])
 def delete_question(question_id):
-    return "delete question "+ question_id
+    return render_template('question.html', type = "delete", question_id = question_id)
 
 ##Blog Route
 @app.route('/blog')

@@ -1,0 +1,14 @@
+extends main
+
+block content 
+  | {% if type == "new" %}
+  h2 you can create a new question
+  | {% elif type == "view" %}
+  h2 you are looking at question no {{ question_id }}
+  | {% elif type == "edit" %}
+  h2 you can now edit question no {{ question_id }}
+  | {% elif type == "delete" %}
+  h2 you can now delete question no {{ question_id }}
+  | {% else %}
+  h2 It's shows all the post in this page
+  | {% endif %}
