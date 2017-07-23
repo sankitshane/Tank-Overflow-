@@ -64,23 +64,23 @@ def delete_question(question_id):
 ##Blog Route
 @app.route('/blog')
 def blog():
-    return "Blogs page"
+    return render_template('blog.html')
 
 @app.route('/newblog', methods=['GET', 'POST'])
 def newBlog():
-    return "Add a new Blog"
+    return render_template('blog.html', type = "new")
 
 @app.route('/blog/<string:blog_id>')
 def sub_blog(blog_id):
-    return "Blogs page " + blog_id
+    return render_template('blog.html', type = "view", blog_id = blog_id)
 
 @app.route('/blog/<string:blog_id>/edit', methods=['GET', 'POST'])
 def edit_blog(blog_id):
-    return "Blogs page " + blog_id
+    return render_template('blog.html', type = "edit", blog_id = blog_id)
 
 @app.route('/blog/<string:blog_id>/delete', methods=['GET', 'POST'])
 def delete_blog(blog_id):
-    return "Blogs page " + blog_id
+    return render_template('blog.html', type = "delete", blog_id = blog_id)
 
 ##Login Route
 @app.route('/login')

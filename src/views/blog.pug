@@ -1,0 +1,14 @@
+extends main
+
+block content
+  | {% if type == "new" %}
+  h2 you can create a new blog
+  | {% elif type == "view" %}
+  h2 you are looking at blog no {{ blog_id }}
+  | {% elif type == "edit" %}
+  h2 you can now edit blog no {{ blog_id }}
+  | {% elif type == "delete" %}
+  h2 you can now delete blog no {{ blog_id }}
+  | {% else %}
+  h2 It's shows all the blogs in this page
+  | {% endif %}
