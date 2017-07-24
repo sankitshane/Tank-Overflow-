@@ -2,7 +2,24 @@ extends main
 
 block content
   | {% if type == 'new' %}
-  h2 you have about to make a new post
+  form(action = '#', method = "post")
+    h2 Title
+    input(
+      type = "text"
+      name = "title"
+      required
+      )
+    h2 Description
+    input(
+      type = "text"
+      name = "des"
+      required
+      )
+    br
+    br
+    input(
+      type="submit"
+      )
   | {% endif %}
   
   | {% if type == 'view' %}

@@ -20,12 +20,17 @@ connection = pymongo.MongoClient("mongodb://localhost")
 def post():
     db = connection.posthub
     posts = db.post
-    query = {}
-    cursor = posts.find_one()
+    cursor = posts.find()
     return render_template('index.html',cursor = cursor)
 
-@app.route('/post', methods=['GET', 'POST'])
+@app.route('/newpost', methods=['GET', 'POST'])
 def newpost():
+    if request.method == "POST":
+        addnew = {"title": request.form['title'],"description":request.form['des']}
+        db = connection.posthub
+        posts = db.post
+        posts.insert(addnew)
+        return redirect(url_for('post'))
     return render_template('post.html', type = "new")
 
 @app.route('/post/<string:post_id>')

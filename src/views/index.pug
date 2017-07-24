@@ -2,5 +2,6 @@ extends main
 
 block content
   #root
-  h2 {{cursor['title']}}
-  h2 Its working
+  | {% for post in cursor %}  
+  h2 {{post['title']}}
+  |{% endfor %}

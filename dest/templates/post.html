@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title>Tank Overflow</title><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" async></head><body>{% if type == 'new' %}<h2>you have about to make a new post</h2>{% endif %}
+<!DOCTYPE html><html><head><title>Tank Overflow</title><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" async></head><body>{% if type == 'new' %}<form action="#" method="post"><h2>Title</h2><input type="text" name="title" required><h2>Description</h2><input type="text" name="des" required><br><br><input type="submit"></form>{% endif %}
 {% if type == 'view' %}<h2>you are looking at specific post no. {{ post_id }}</h2>{% endif %}
 {% if type == 'edit' %}<h2>you are going to edit post no. {{ post_id }}</h2>{% endif %}
 {% if type == 'delete' %}<h2>you are going to delete post no. {{ post_id }}</h2>{% endif %}<script type="text/javascript" src="{{ url_for('static', filename='script/bundle.js') }}"></script></body></html>
