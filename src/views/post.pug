@@ -23,14 +23,37 @@ block content
   | {% endif %}
   
   | {% if type == 'view' %}
-  h2 you are looking at specific post no. {{ post_id }}
+  h2 View
+  p {{ post['title'] }}
+  h2 Description
+  p {{ post['description'] }}
   | {% endif %}
 
   | {% if type == 'edit' %}
-  h2 you are going to edit post no. {{ post_id }}
+  h1 Update
+  form(action = '#', method = "post")
+    h2 Enter title 
+    input(
+          type="text" 
+          name="title"
+          value = "{{ post['title'] }}"
+        )
+    h2 Enter Description
+    input(
+          type="text" 
+          name="des" 
+          value = "{{ post['description'] }}"
+        )
+    input(
+          type="submit"
+        )
   | {% endif %}
 
   | {% if type == 'delete' %}
-  h2 you are going to delete post no. {{ post_id }}
+  h1 Delete
+  form(action="#", method ="post")
+    h2 Are you sure you want to delete the post with title {{ post['title'] }} ?
+    input(type="text" name="bool" value ="NO")
+    input(type="submit")
   | {% endif %}
   

@@ -35,16 +35,42 @@ def newpost():
 
 @app.route('/post/<string:post_id>')
 def sub_post(post_id):
-    return render_template('post.html', type = "view", post_id = post_id)
+    db = connection.posthub
+    query = {"title":post_id}
+    post = db.post.find_one(query)
+    if post != None:
+        return render_template('post.html', type = "view", post = post)
+    else:
+        return "Please enter the correct ID"
 
 @app.route('/post/<string:post_id>/edit', methods=['GET', 'POST'])
 def edit_post(post_id):
-    return render_template('post.html', type = "edit", post_id = post_id)
+    db = connection.posthub
+    query = {"title": post_id}
+    post = db.post.find_one(query)
+    print post
+    if request.method == 'POST':
+        toupdate = {'$set':{'title':request.form['title'],'description': request.form['des']}}
+        db.post.update(query,toupdate)
+        return redirect(url_for('post'))
+    if post != None:
+        return render_template('post.html', type = "edit", post = post)
+    else:
+        return "Please give a correct ID"
 
 @app.route('/post/<string:post_id>/delete', methods=['GET', 'POST'])
 def delete_post(post_id):
-    return render_template('post.html', type = "delete", post_id = post_id)
-
+    db = connection.posthub
+    query = {'title':post_id}
+    post = db.post.find_one(query)
+    if request.method == 'POST':
+        if request.form['bool'] == "YES":
+            db.post.remove(query)
+        return redirect(url_for('post'))
+    if post != None:
+        return render_template('post.html', type = "delete", post = post)
+    else:
+        return "Please give a correct ID"
 ##Question Rout
 @app.route('/question')
 def question():
