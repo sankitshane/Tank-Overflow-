@@ -11,12 +11,20 @@ html
             href="{{ url_for('static', filename='css/main.css') }}"
             async
             )
+        link(
+          rel='manifest'
+          href='/manifest.json'
+          )
     body
         block content 
         script(
             type="text/javascript"
             src = "{{ url_for('static', filename='script/bundle.js') }}"
             )
+        script(
+          type="text/javascript"
+          src="{{ url_for('static', filename='script/configs.js')}}"
+          )
             
           
           
