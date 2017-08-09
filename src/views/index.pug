@@ -1,7 +1,6 @@
 extends main
 
 block content
-  #root
   | {% for post in cursor %}  
   h2 {{post['title']}}
   |{% endfor %}
