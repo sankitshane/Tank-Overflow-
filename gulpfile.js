@@ -50,7 +50,7 @@ gulp.task('sass', function() {
 });
 
 var paths = {
-    main_js: ['./src/script/new.js'],
+    main_js: ['./src/script/new.js','./src/script/demo.js'],
 };
 
 gulp.task("babel", function() {

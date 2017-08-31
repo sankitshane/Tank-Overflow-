@@ -17,5 +17,5 @@ class Welcome extends React.Component {
 
 ReactDOM.render(
   <Welcome />,
-  document.getElementById('root')
+  document.getElementById('root') 
 );

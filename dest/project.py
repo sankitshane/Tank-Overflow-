@@ -9,6 +9,8 @@ import requests
 from datetime import datetime
 import pymongo
 from pymongo import MongoClient
+from bson.json_util import dumps,loads
+
 
 app = Flask(__name__, static_url_path='', static_folder='')
 
@@ -19,14 +21,14 @@ connection = pymongo.MongoClient("mongodb://localhost")
 @app.route('/post')
 def post():
     db = connection.posthub
-    posts = db.post
-    cursor = posts.find()
-    return render_template('index.html',cursor = cursor)
+    cursor = db.post.find()
+    return render_template('index.html', cursor = dumps(cursor))
 
 @app.route('/newpost', methods=['GET', 'POST'])
 def newpost():
     if request.method == "POST":
-        addnew = {"title": request.form['title'],"description":request.form['des']}
+        a = request.form['tag'].split(' ')
+        addnew = {"title": request.form['title'],"description":request.form['des'],"tags":a}
         db = connection.posthub
         posts = db.post
         posts.insert(addnew)
