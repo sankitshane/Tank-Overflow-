@@ -20923,11 +20923,15 @@ var Welcome = function (_React$Component) {
     value: function render() {
       return _react2.default.createElement(
         'div',
-        null,
+        { className: 'mdl-layout__header mdl-layout__header--waterfall' },
         _react2.default.createElement(
-          'h1',
-          null,
-          this.state.title
+          'div',
+          { className: 'mdl-layout__header-row' },
+          _react2.default.createElement(
+            'h1',
+            { className: 'mdl-layout-title' },
+            this.state.title
+          )
         )
       );
     }

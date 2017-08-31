@@ -8,8 +8,10 @@ class Welcome extends React.Component {
     }
   render() {
     return(
-      <div>
-        <h1>{this.state.title}</h1>
+      <div className="mdl-layout__header mdl-layout__header--waterfall">
+        <div className="mdl-layout__header-row">
+          <h1 className="mdl-layout-title">{this.state.title}</h1>
+        </div>
       </div>
     );
   }
@@ -17,5 +19,5 @@ class Welcome extends React.Component {
 
 ReactDOM.render(
   <Welcome />,
-  document.getElementById('root') 
+  document.getElementById('root')
 );
