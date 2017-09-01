@@ -20906,40 +20906,84 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Welcome = function (_React$Component) {
-  _inherits(Welcome, _React$Component);
+var Header = function (_React$Component) {
+  _inherits(Header, _React$Component);
 
-  function Welcome() {
-    _classCallCheck(this, Welcome);
+  function Header() {
+    _classCallCheck(this, Header);
 
-    var _this = _possibleConstructorReturn(this, (Welcome.__proto__ || Object.getPrototypeOf(Welcome)).call(this));
+    var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this));
 
-    _this.state = { title: 'Tank OverFlow' };
+    _this.state = { title: 'Tank Overflow', p1: 'Question', p2: 'Blog', p3: 'Tags', p4: 'Projects' };
     return _this;
   }
 
-  _createClass(Welcome, [{
+  _createClass(Header, [{
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        'div',
-        { className: 'mdl-layout__header mdl-layout__header--waterfall' },
+        'header',
+        { className: 'mdl-layout__header mdl-layout__header--scroll' },
         _react2.default.createElement(
           'div',
           { className: 'mdl-layout__header-row' },
           _react2.default.createElement(
-            'h1',
+            'span',
             { className: 'mdl-layout-title' },
             this.state.title
+          ),
+          _react2.default.createElement('div', { className: 'mdl-layout-spacer' }),
+          _react2.default.createElement(
+            'nav',
+            { className: 'mdl-navigation' },
+            _react2.default.createElement(
+              'a',
+              { className: 'mdl-navigation__link', href: '' },
+              this.state.p1
+            ),
+            _react2.default.createElement(
+              'a',
+              { className: 'mdl-navigation__link', href: '' },
+              this.state.p2
+            ),
+            _react2.default.createElement(
+              'a',
+              { className: 'mdl-navigation__link', href: '' },
+              this.state.p3
+            ),
+            _react2.default.createElement(
+              'a',
+              { className: 'mdl-navigation__link', href: '' },
+              this.state.p4
+            )
           )
         )
       );
     }
   }]);
 
+  return Header;
+}(_react2.default.Component);
+
+var Welcome = function (_React$Component2) {
+  _inherits(Welcome, _React$Component2);
+
+  function Welcome() {
+    _classCallCheck(this, Welcome);
+
+    return _possibleConstructorReturn(this, (Welcome.__proto__ || Object.getPrototypeOf(Welcome)).apply(this, arguments));
+  }
+
+  _createClass(Welcome, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(Header, null);
+    }
+  }]);
+
   return Welcome;
 }(_react2.default.Component);
 
-_reactDom2.default.render(_react2.default.createElement(Welcome, null), document.getElementById('root'));
+_reactDom2.default.render(_react2.default.createElement(Welcome, null), document.getElementById('header'));
 
 },{"react":182,"react-dom":29}]},{},[184,183]);
