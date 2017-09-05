@@ -20849,16 +20849,33 @@ var NewComponent = function (_React$Component) {
       return this.state.myData.map(function (item) {
         return _react2.default.createElement(
           'div',
-          { key: item._id.$oid },
+          { className: 'demo-card-wide mdl-card mdl-shadow--2dp', key: item._id.$oid },
           _react2.default.createElement(
-            'h3',
-            null,
-            item.title
+            'div',
+            { className: 'mdl-card__title' },
+            _react2.default.createElement(
+              'h2',
+              { className: 'mdl-card__title-text' },
+              item.title
+            )
           ),
           _react2.default.createElement(
-            'p',
-            null,
+            'div',
+            { className: 'mdl-card__supporting-text' },
             item.description
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'mdl-card__menu' },
+            _react2.default.createElement(
+              'button',
+              { className: 'mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect' },
+              _react2.default.createElement(
+                'i',
+                { className: 'material-icons' },
+                'share'
+              )
+            )
           )
         );
       });
