@@ -20844,8 +20844,25 @@ var NewComponent = function (_React$Component) {
       this.setState({ myData: data });
     }
   }, {
+    key: 'render_tags',
+    value: function render_tags(tags) {
+      return tags.map(function (tag) {
+        return _react2.default.createElement(
+          'span',
+          { className: 'mdl-chip' },
+          _react2.default.createElement(
+            'span',
+            { className: 'mdl-chip__text' },
+            tag
+          )
+        );
+      });
+    }
+  }, {
     key: 'renderList',
     value: function renderList() {
+      var _this2 = this;
+
       return this.state.myData.map(function (item) {
         return _react2.default.createElement(
           'div',
@@ -20857,6 +20874,12 @@ var NewComponent = function (_React$Component) {
               'h2',
               { className: 'mdl-card__title-text' },
               item.title
+            ),
+            _react2.default.createElement('div', { className: 'mdl-layout-spacer' }),
+            _react2.default.createElement(
+              'div',
+              { className: 'tags' },
+              _this2.render_tags(item.tags)
             )
           ),
           _react2.default.createElement(
