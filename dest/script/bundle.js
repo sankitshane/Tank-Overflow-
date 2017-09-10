@@ -20983,7 +20983,7 @@ var InfoTab = function (_React$Component) {
           { className: 'mdl-card__actions mdl-card--border' },
           _react2.default.createElement(
             'a',
-            { className: 'mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent', href: '/newblog' },
+            { className: 'mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent', href: '/newpost' },
             'Start Writing'
           )
         )
@@ -21025,7 +21025,7 @@ var Header = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this));
 
-    _this.state = { title: 'Tank Overflow', p1: 'Question', p2: 'Blog', p3: 'Tags', p4: 'Projects' };
+    _this.state = { title: 'Tank Overflow', p1: 'Question', p2: 'Blog', p3: 'Projects' };
     return _this;
   }
 
@@ -21063,13 +21063,8 @@ var Header = function (_React$Component) {
             ),
             _react2.default.createElement(
               'a',
-              { className: 'mdl-navigation__link', href: '' },
+              { className: 'mdl-navigation__link', href: '/question' },
               this.state.p3
-            ),
-            _react2.default.createElement(
-              'a',
-              { className: 'mdl-navigation__link', href: '' },
-              this.state.p4
             )
           )
         )

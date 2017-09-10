@@ -17,7 +17,7 @@ class InfoTab extends React.Component {
           Aenan convallis.
         </div>
         <div className="mdl-card__actions mdl-card--border">
-          <a className="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" href="/newblog">
+          <a className="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" href="/newpost">
             Start Writing
           </a>
         </div>

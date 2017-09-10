@@ -115,6 +115,27 @@ def edit_blog(blog_id):
 def delete_blog(blog_id):
     return render_template('blog.html', type = "delete", blog_id = blog_id)
 
+##Projects Route
+@app.route('/project')
+def blog():
+    return render_template('project.html')
+
+@app.route('/newproj', methods=['GET', 'POST'])
+def newBlog():
+    return render_template('project.html', type = "new")
+
+@app.route('/project/<string:proj_id>')
+def sub_blog(blog_id):
+    return render_template('project.html', type = "view", proj_id = blog_id)
+
+@app.route('/project/<string:proj_id>/edit', methods=['GET', 'POST'])
+def edit_blog(blog_id):
+    return render_template('project.html', type = "edit", proj_id = blog_id)
+
+@app.route('/project/<string:proj_id>/delete', methods=['GET', 'POST'])
+def delete_blog(blog_id):
+    return render_template('project.html', type = "delete", proj_id = blog_id)
+
 ##Login Route
 @app.route('/login')
 def login():

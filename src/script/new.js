@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 class Header extends React.Component{
   constructor(){
     super();
-    this.state = {title:'Tank Overflow',p1:'Question',p2:'Blog',p3:'Tags',p4:'Projects'}
+    this.state = {title:'Tank Overflow',p1:'Question',p2:'Blog',p3:'Projects'}
   }
   render() {
     return (
@@ -15,8 +15,7 @@ class Header extends React.Component{
           <nav className="mdl-navigation">
             <a className="mdl-navigation__link" href="/question">{this.state.p1}</a>
             <a className="mdl-navigation__link" href="/blog">{this.state.p2}</a>
-            <a className="mdl-navigation__link" href="">{this.state.p3}</a>
-            <a className="mdl-navigation__link" href="">{this.state.p4}</a>
+            <a className="mdl-navigation__link" href="/question">{this.state.p3}</a>
           </nav>
         </div>
       </header>
