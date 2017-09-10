@@ -20983,7 +20983,7 @@ var InfoTab = function (_React$Component) {
           { className: 'mdl-card__actions mdl-card--border' },
           _react2.default.createElement(
             'a',
-            { className: 'mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent' },
+            { className: 'mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent', href: '/newblog' },
             'Start Writing'
           )
         )
@@ -21039,9 +21039,13 @@ var Header = function (_React$Component) {
           'div',
           { className: 'mdl-layout__header-row' },
           _react2.default.createElement(
-            'span',
-            { className: 'mdl-layout-title' },
-            this.state.title
+            'a',
+            { href: '/' },
+            _react2.default.createElement(
+              'span',
+              { className: 'mdl-layout-title' },
+              this.state.title
+            )
           ),
           _react2.default.createElement('div', { className: 'mdl-layout-spacer' }),
           _react2.default.createElement(
@@ -21049,12 +21053,12 @@ var Header = function (_React$Component) {
             { className: 'mdl-navigation' },
             _react2.default.createElement(
               'a',
-              { className: 'mdl-navigation__link', href: '' },
+              { className: 'mdl-navigation__link', href: '/question' },
               this.state.p1
             ),
             _react2.default.createElement(
               'a',
-              { className: 'mdl-navigation__link', href: '' },
+              { className: 'mdl-navigation__link', href: '/blog' },
               this.state.p2
             ),
             _react2.default.createElement(
