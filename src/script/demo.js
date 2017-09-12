@@ -23,6 +23,23 @@ class NewComponent extends React.Component {
     });
   }
 
+  render_string(str){
+    if (str.length > 350){
+      return(
+        <div className="mdl-card__supporting-text">
+          {str.substring(0,350)+ "........."}
+        </div>
+      );
+    }
+    else {
+      return(
+        <div className="mdl-card__supporting-text">
+          {str+"."}
+        </div>
+      );
+    }
+  }
+
   renderList() {
     return  this.state.myData.map((item) => {
       return (
@@ -34,9 +51,7 @@ class NewComponent extends React.Component {
                   {this.render_tags(item.tags)}
               </div>
               </div>
-              <div className="mdl-card__supporting-text">
-                {item.description}
-              </div>
+              {this.render_string(item.description)}
               <div className="mdl-card__menu">
                 <button className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
                   <i className="material-icons">share</i>

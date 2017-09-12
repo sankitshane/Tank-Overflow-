@@ -20859,6 +20859,23 @@ var NewComponent = function (_React$Component) {
       });
     }
   }, {
+    key: 'render_string',
+    value: function render_string(str) {
+      if (str.length > 350) {
+        return _react2.default.createElement(
+          'div',
+          { className: 'mdl-card__supporting-text' },
+          str.substring(0, 350) + "........."
+        );
+      } else {
+        return _react2.default.createElement(
+          'div',
+          { className: 'mdl-card__supporting-text' },
+          str + "."
+        );
+      }
+    }
+  }, {
     key: 'renderList',
     value: function renderList() {
       var _this2 = this;
@@ -20882,11 +20899,7 @@ var NewComponent = function (_React$Component) {
               _this2.render_tags(item.tags)
             )
           ),
-          _react2.default.createElement(
-            'div',
-            { className: 'mdl-card__supporting-text' },
-            item.description
-          ),
+          _this2.render_string(item.description),
           _react2.default.createElement(
             'div',
             { className: 'mdl-card__menu' },
