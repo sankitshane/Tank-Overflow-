@@ -28,7 +28,7 @@ gulp.task('eslint', function() {
 
 gulp.task('views', function() {
     gulp.src('./src/views/*.pug')
-        .pipe(pug({outputStyle: 'compressed'}).on('error', sass.logError))
+        .pipe(pug({pretty: true}).on('error', sass.logError))
         .pipe(gulp.dest('./dest/templates'))
 });
 
@@ -50,7 +50,7 @@ gulp.task('sass', function() {
 });
 
 var paths = {
-    main_js: ['./src/script/new.js','./src/script/demo.js','./src/script/info.js'],
+    main_js: ['./src/script/new.js','./src/script/demo.js','./src/script/info.js','./src/script/blog.js'],
 };
 
 gulp.task("babel", function() {

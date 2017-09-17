@@ -23,14 +23,13 @@ html
         #header
         block content 
         script(
-            type="text/javascript"
-            src = "{{ url_for('static', filename='script/bundle.js') }}"
-            )
-        script(
           type="text/javascript"
           src="{{ url_for('static', filename='script/configs.js')}}"
           )
-        
+        script(
+          type="text/javascript"
+          src = "{{ url_for('static', filename='script/bundle.js') }}"
+          )
           
           
         
