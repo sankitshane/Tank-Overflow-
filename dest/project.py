@@ -16,13 +16,28 @@ app = Flask(__name__, static_url_path='', static_folder='')
 
 connection = pymongo.MongoClient("mongodb://localhost")
 
+tasks = [
+    {
+        'id': 1,
+        'title': u'Buy groceries',
+        'description': u'Milk, Cheese, Pizza, Fruit, Tylenol',
+        'done': False
+    },
+    {
+        'id': 2,
+        'title': u'Learn Python',
+        'description': u'Need to find a good Python tutorial on the web',
+        'done': False
+    }
+]
+
 ##Feed Routes
-@app.route('/')
-@app.route('/post')
+@app.route('/tankover/api/v1.0/posts', methods=['GET'])
 def post():
     db = connection.posthub
-    cursor = db.post.find()
-    return render_template('index.html', cursor = dumps(cursor))
+    cursor = dumps(db.post.find().limit(3))
+    return jsonify({'cursor': cursor})
+
 
 @app.route('/newpost', methods=['GET', 'POST'])
 def newpost():
