@@ -1,10 +1,9 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for
+from flask import Flask, request, abort, make_response, jsonify
 from flask import session as login_session
 import random
 import string
 import httplib2
 import json
-from flask import make_response
 import requests
 from datetime import datetime
 import pymongo
@@ -12,53 +11,43 @@ from pymongo import MongoClient
 from bson.json_util import dumps,loads
 
 
-app = Flask(__name__, static_url_path='', static_folder='')
+app = Flask(__name__)
 
 connection = pymongo.MongoClient("mongodb://localhost")
 
-tasks = [
-    {
-        'id': 1,
-        'title': u'Buy groceries',
-        'description': u'Milk, Cheese, Pizza, Fruit, Tylenol',
-        'done': False
-    },
-    {
-        'id': 2,
-        'title': u'Learn Python',
-        'description': u'Need to find a good Python tutorial on the web',
-        'done': False
-    }
-]
+##Error Handler
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error':'Not found'}),404)
 
 ##Feed Routes
 @app.route('/tankover/api/v1.0/posts', methods=['GET'])
 def post():
     db = connection.posthub
-    cursor = dumps(db.post.find().limit(3))
-    return jsonify({'cursor': cursor})
+    documents = [doc for doc in db.post.find({})]
+    return dumps({'cursor': documents})
 
-
-@app.route('/newpost', methods=['GET', 'POST'])
-def newpost():
-    if request.method == "POST":
-        a = request.form['tag'].split(' ')
-        addnew = {"title": request.form['title'],"description":request.form['des'],"tags":a}
-        db = connection.posthub
-        posts = db.post
-        posts.insert(addnew)
-        return redirect(url_for('post'))
-    return render_template('post.html', type = "new")
-
-@app.route('/post/<string:post_id>')
+@app.route('/tankover/api/v1.0/posts/<string:post_id>', methods=['GET'])
 def sub_post(post_id):
     db = connection.posthub
     query = {"title":post_id}
-    post = db.post.find_one(query)
-    if post != None:
-        return render_template('post.html', type = "view", post = post)
-    else:
-        return "Please enter the correct ID"
+    documents = db.post.find_one(query)
+    if documents == None:
+        abort(404)
+    return dumps({'cursor': documents})
+
+@app.route('/tankover/api/v1.0/posts', methods=['POST'])
+def newpost():
+    if not request.json or not 'title' in request.json:
+        abort(400)
+    addNew = {
+                "title": request.json['title'],
+                "description":request.json.get('description',''),
+                "tags": request.json['tags']
+            }
+    db = connection.posthub
+    db.post.insert(addNew)
+    return dumps({'post':addNew}),201
 
 @app.route('/post/<string:post_id>/edit', methods=['GET', 'POST'])
 def edit_post(post_id):
