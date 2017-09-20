@@ -10,9 +10,7 @@ import pymongo
 from pymongo import MongoClient
 from bson.json_util import dumps,loads
 
-
 app = Flask(__name__)
-
 connection = pymongo.MongoClient("mongodb://localhost")
 
 ##Error Handler
@@ -49,34 +47,36 @@ def newpost():
     db.post.insert(addNew)
     return dumps({'post':addNew}),201
 
-@app.route('/post/<string:post_id>/edit', methods=['GET', 'POST'])
-def edit_post(post_id):
+@app.route('/tankover/api/v1.0/posts/<string:post_id>', methods=['PUT'])
+def update_post(post_id):
     db = connection.posthub
     query = {"title": post_id}
-    post = db.post.find_one(query)
-    print post
-    if request.method == 'POST':
-        toupdate = {'$set':{'title':request.form['title'],'description': request.form['des']}}
-        db.post.update(query,toupdate)
-        return redirect(url_for('post'))
-    if post != None:
-        return render_template('post.html', type = "edit", post = post)
-    else:
-        return "Please give a correct ID"
+    document = db.post.find_one(query)
+    if document == None:
+        abort(404)
+    if not request.json:
+        abort(400)
+    if 'title' in request.json and type(request.json['title']) != unicode:
+        abort(400)
+    if 'description' in request.json and type(request.json['description']) is not unicode:
+        abort(400)
+    make_new = {}
+    for i in request.json:
+        make_new[i] = request.json[i]
+    toupdate = {'$set':make_new}
+    db.post.update(query,toupdate)
+    return sub_post(request.json['title'])
 
-@app.route('/post/<string:post_id>/delete', methods=['GET', 'POST'])
+@app.route('/tankover/api/v1.0/posts/<string:post_id>', methods=['DELETE'])
 def delete_post(post_id):
     db = connection.posthub
     query = {'title':post_id}
-    post = db.post.find_one(query)
-    if request.method == 'POST':
-        if request.form['bool'] == "YES":
-            db.post.remove(query)
-        return redirect(url_for('post'))
-    if post != None:
-        return render_template('post.html', type = "delete", post = post)
-    else:
-        return "Please give a correct ID"
+    document = db.post.find_one(query)
+    if document == None:
+        abort(404)
+    db.post.remove(query)
+    return jsonify({'result':True})
+
 ##Question Rout
 @app.route('/question')
 def question():
