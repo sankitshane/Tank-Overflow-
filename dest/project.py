@@ -77,68 +77,183 @@ def delete_post(post_id):
     db.post.remove(query)
     return jsonify({'result':True})
 
+
 ##Question Rout
-@app.route('/question')
+@app.route('/tankover/api/v1.0/questions', methods=['GET'])
 def question():
-    return render_template('question.html')
+    db = connection.questionhub
+    documents = [doc for doc in db.question.find({})]
+    return dumps({'cursor': documents})
 
-@app.route('/newquestion', methods=['GET', 'POST'])
-def newQuestion():
-    return render_template('question.html', type = "new")
-
-@app.route('/question/<string:question_id>')
+@app.route('tankover/api/v1.0/questions/<string:question_id>', methods=['GET'])
 def sub_question(question_id):
-    return render_template('question.html', type = "view", question_id = question_id)
+    db = connection.questionhub
+    query = {"title":question_id}
+    documents = db.question.find_one(query)
+    if documents == None:
+        abort(404)
+    return dumps({'cursor': documents})
 
-@app.route('/question/<string:question_id>/edit', methods=['GET', 'POST'])
+@app.route('/tankover/api/v1.0/questions', methods=['POST'])
+def newQuestion():
+    if not request.json or not 'title' in request.json:
+        abort(400)
+    addNew = {
+                "title": request.json['title'],
+                "description":request.json.get('description',''),
+                "tags": request.json['tags']
+            }
+    db = connection.questionhub
+    db.question.insert(addNew)
+    return dumps({'question':addNew}),201
+
+@app.route('/tankover/api/v1.0/questions/<string:question_id>', methods=['PUT'])
 def edit_question(question_id):
-    return render_template('question.html', type = "edit", question_id = question_id)
+    db = connection.questionhub
+    query = {"title": question_id}
+    document = db.question.find_one(query)
+    if document == None:
+        abort(404)
+    if not request.json:
+        abort(400)
+    if 'title' in request.json and type(request.json['title']) != unicode:
+        abort(400)
+    if 'description' in request.json and type(request.json['description']) is not unicode:
+        abort(400)
+    make_new = {}
+    for i in request.json:
+        make_new[i] = request.json[i]
+    toupdate = {'$set':make_new}
+    db.question.update(query,toupdate)
+    return sub_question(request.json['title'])
 
-@app.route('/question/<string:question_id>/delete', methods=['GET', 'POST'])
+@app.route('/tankover/api/v1.0/questions/<string:question_id>', methods=['DELETE'])
 def delete_question(question_id):
-    return render_template('question.html', type = "delete", question_id = question_id)
+    db = connection.questionhub
+    query = {'title':question_id}
+    document = db.question.find_one(query)
+    if document == None:
+        abort(404)
+    db.question.remove(query)
+    return jsonify({'result':True})
 
 ##Blog Route
-@app.route('/blog')
+@app.route('/tankover/api/v1.0/blogs',methods=['GET'])
 def blog():
-    return render_template('blog.html')
+    db = connection.bloghub
+    documents = [doc for doc in db.blog.find({})]
+    return dumps({'cursor': documents})
 
-@app.route('/newblog', methods=['GET', 'POST'])
-def newBlog():
-    return render_template('blog.html', type = "new")
-
-@app.route('/blog/<string:blog_id>')
+@app.route('/tankover/api/v1.0/blogs/<string:blog_id>', methods=['GET'])
 def sub_blog(blog_id):
-    return render_template('blog.html', type = "view", blog_id = blog_id)
+    db = connection.bloghub
+    query = {"title":blog_id}
+    documents = db.blog.find_one(query)
+    if documents == None:
+        abort(404)
+    return dumps({'cursor': documents})
 
-@app.route('/blog/<string:blog_id>/edit', methods=['GET', 'POST'])
+@app.route('/tankover/api/v1.0/blogs', methods=['POST'])
+def newBlog():
+    if not request.json or not 'title' in request.json:
+        abort(400)
+    addNew = {
+                "title": request.json['title'],
+                "description":request.json.get('description',''),
+                "tags": request.json['tags']
+            }
+    db = connection.bloghub
+    db.blog.insert(addNew)
+    return dumps({'blog':addNew}),201
+
+@app.route('/tankover/api/v1.0/blogs/<string:blog_id>', methods=['PUT'])
 def edit_blog(blog_id):
-    return render_template('blog.html', type = "edit", blog_id = blog_id)
+    db = connection.bloghub
+    query = {"title": blog_id}
+    document = db.blog.find_one(query)
+    if document == None:
+        abort(404)
+    if not request.json:
+        abort(400)
+    if 'title' in request.json and type(request.json['title']) != unicode:
+        abort(400)
+    if 'description' in request.json and type(request.json['description']) is not unicode:
+        abort(400)
+    make_new = {}
+    for i in request.json:
+        make_new[i] = request.json[i]
+    toupdate = {'$set':make_new}
+    db.blog.update(query,toupdate)
+    return sub_blog(request.json['title'])
 
-@app.route('/blog/<string:blog_id>/delete', methods=['GET', 'POST'])
+@app.route('/tankover/api/v1.0/blogs/<string:blog_id>', methods=['DELETE'])
 def delete_blog(blog_id):
-    return render_template('blog.html', type = "delete", blog_id = blog_id)
+    db = connection.bloghub
+    query = {'title':blog_id}
+    document = db.blog.find_one(query)
+    if document == None:
+        abort(404)
+    db.blog.remove(query)
+    return jsonify({'result':True})
 
 ##Projects Route
-@app.route('/project')
-def blog():
-    return render_template('project.html')
+@app.route('/tankover/api/v1.0/projects', methods=['GET'])
+def project():
+    db = connection.projecthub
+    documents = [doc for doc in db.project.find({})]
+    return dumps({'cursor': documents})
 
-@app.route('/newproj', methods=['GET', 'POST'])
-def newBlog():
-    return render_template('project.html', type = "new")
+@app.route('/tankover/api/v1.0/projects/<string:proj_id>', methods=['GET'])
+def sub_project(proj_id):
+    db = connection.projecthub
+    query = {"title":proj_id}
+    documents = db.project.find_one(query)
+    if documents == None:
+        abort(404)
+    return dumps({'cursor': documents})
 
-@app.route('/project/<string:proj_id>')
-def sub_blog(blog_id):
-    return render_template('project.html', type = "view", proj_id = blog_id)
+@app.route('/tankover/api/v1.0/projects', methods=['POST'])
+def newproject():
+    if not request.json or not 'title' in request.json:
+        abort(400)
+    addNew = {
+                "title": request.json['title'],
+                "description":request.json.get('description',''),
+                "tags": request.json['tags']
+            }
+    db = connection.projecthub
+    db.project.insert(addNew)
+    return dumps({'post':addNew}),201
 
-@app.route('/project/<string:proj_id>/edit', methods=['GET', 'POST'])
-def edit_blog(blog_id):
-    return render_template('project.html', type = "edit", proj_id = blog_id)
+@app.route('/tankover/api/v1.0/projects/<string:proj_id>', methods=['PUT'])
+def edit_project(proj_id):
+    db = connection.projecthub
+    query = {"title": proj_id}
+    document = db.project.find_one(query)
+    if document == None:
+        abort(404)
+    if not request.json:
+        abort(400)
+    if 'title' in request.json and type(request.json['title']) != unicode:
+        abort(400)
+    if 'description' in request.json and type(request.json['description']) is not unicode:
+        abort(400)
+    make_new = {}
+    for i in request.json:
+        make_new[i] = request.json[i]
+    toupdate = {'$set':make_new}
+    db.project.update(query,toupdate)
+    return sub_project(request.json['title'])
 
-@app.route('/project/<string:proj_id>/delete', methods=['GET', 'POST'])
-def delete_blog(blog_id):
-    return render_template('project.html', type = "delete", proj_id = blog_id)
+@app.route('/tankover/api/v1.0/projects/<string:proj_id>', methods=['DELETE'])
+def delete_blog(proj_id):
+    db = connection.projecthub
+    query = {'title':proj_id}
+    document = db.project.find_one(query)
+    if document == None:
+        abort(404)
+    db.project.remove(query)
+    return jsonify({'result':True})
 
 ##Login Route
 @app.route('/login')
