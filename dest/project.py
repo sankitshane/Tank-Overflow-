@@ -9,9 +9,22 @@ from datetime import datetime
 import pymongo
 from pymongo import MongoClient
 from bson.json_util import dumps,loads
+from flask_httpauth import HTTPBasicAuth
+auth = HTTPBasicAuth()
 
 app = Flask(__name__)
 connection = pymongo.MongoClient("mongodb://localhost")
+
+##auth
+@auth.get_password
+def get_password(username):
+    if username == 'miguel':
+        return 'python'
+    return None
+
+@auth.error_handler
+def unauthorized():
+    return make_response(jsonify({'error': 'Unauthorized access'}), 401)
 
 ##Error Handler
 @app.errorhandler(404)
@@ -35,6 +48,7 @@ def sub_post(post_id):
     return dumps({'cursor': documents})
 
 @app.route('/tankover/api/v1.0/posts', methods=['POST'])
+@auth.login_required
 def newpost():
     if not request.json or not 'title' in request.json:
         abort(400)
@@ -48,6 +62,7 @@ def newpost():
     return dumps({'post':addNew}),201
 
 @app.route('/tankover/api/v1.0/posts/<string:post_id>', methods=['PUT'])
+@auth.login_required
 def update_post(post_id):
     db = connection.posthub
     query = {"title": post_id}
@@ -68,6 +83,7 @@ def update_post(post_id):
     return sub_post(request.json['title'])
 
 @app.route('/tankover/api/v1.0/posts/<string:post_id>', methods=['DELETE'])
+@auth.login_required
 def delete_post(post_id):
     db = connection.posthub
     query = {'title':post_id}
@@ -85,7 +101,7 @@ def question():
     documents = [doc for doc in db.question.find({})]
     return dumps({'cursor': documents})
 
-@app.route('tankover/api/v1.0/questions/<string:question_id>', methods=['GET'])
+@app.route('/tankover/api/v1.0/questions/<string:question_id>', methods=['GET'])
 def sub_question(question_id):
     db = connection.questionhub
     query = {"title":question_id}
@@ -95,6 +111,7 @@ def sub_question(question_id):
     return dumps({'cursor': documents})
 
 @app.route('/tankover/api/v1.0/questions', methods=['POST'])
+@auth.login_required
 def newQuestion():
     if not request.json or not 'title' in request.json:
         abort(400)
@@ -108,6 +125,7 @@ def newQuestion():
     return dumps({'question':addNew}),201
 
 @app.route('/tankover/api/v1.0/questions/<string:question_id>', methods=['PUT'])
+@auth.login_required
 def edit_question(question_id):
     db = connection.questionhub
     query = {"title": question_id}
@@ -128,6 +146,7 @@ def edit_question(question_id):
     return sub_question(request.json['title'])
 
 @app.route('/tankover/api/v1.0/questions/<string:question_id>', methods=['DELETE'])
+@auth.login_required
 def delete_question(question_id):
     db = connection.questionhub
     query = {'title':question_id}
@@ -154,6 +173,7 @@ def sub_blog(blog_id):
     return dumps({'cursor': documents})
 
 @app.route('/tankover/api/v1.0/blogs', methods=['POST'])
+@auth.login_required
 def newBlog():
     if not request.json or not 'title' in request.json:
         abort(400)
@@ -167,6 +187,7 @@ def newBlog():
     return dumps({'blog':addNew}),201
 
 @app.route('/tankover/api/v1.0/blogs/<string:blog_id>', methods=['PUT'])
+@auth.login_required
 def edit_blog(blog_id):
     db = connection.bloghub
     query = {"title": blog_id}
@@ -187,6 +208,7 @@ def edit_blog(blog_id):
     return sub_blog(request.json['title'])
 
 @app.route('/tankover/api/v1.0/blogs/<string:blog_id>', methods=['DELETE'])
+@auth.login_required
 def delete_blog(blog_id):
     db = connection.bloghub
     query = {'title':blog_id}
@@ -213,6 +235,7 @@ def sub_project(proj_id):
     return dumps({'cursor': documents})
 
 @app.route('/tankover/api/v1.0/projects', methods=['POST'])
+@auth.login_required
 def newproject():
     if not request.json or not 'title' in request.json:
         abort(400)
@@ -226,6 +249,7 @@ def newproject():
     return dumps({'post':addNew}),201
 
 @app.route('/tankover/api/v1.0/projects/<string:proj_id>', methods=['PUT'])
+@auth.login_required
 def edit_project(proj_id):
     db = connection.projecthub
     query = {"title": proj_id}
@@ -246,6 +270,7 @@ def edit_project(proj_id):
     return sub_project(request.json['title'])
 
 @app.route('/tankover/api/v1.0/projects/<string:proj_id>', methods=['DELETE'])
+@auth.login_required
 def delete_blog(proj_id):
     db = connection.projecthub
     query = {'title':proj_id}
