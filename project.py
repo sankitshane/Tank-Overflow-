@@ -115,10 +115,13 @@ def sub_question(question_id):
 def newQuestion():
     if not request.json or not 'title' in request.json:
         abort(400)
+    tags = request.json['tags'].split()
     addNew = {
                 "title": request.json['title'],
                 "description":request.json.get('description',''),
-                "tags": request.json['tags']
+                "tags": tags,
+                "answer": [],
+                "comments":[]
             }
     db = connection.questionhub
     db.question.insert(addNew)
@@ -134,16 +137,16 @@ def edit_question(question_id):
         abort(404)
     if not request.json:
         abort(400)
-    if 'title' in request.json and type(request.json['title']) != unicode:
-        abort(400)
-    if 'description' in request.json and type(request.json['description']) is not unicode:
+    if request.json['title'] != question_id:
         abort(400)
     make_new = {}
     for i in request.json:
+        if i not in document:
+            abort(400)
         make_new[i] = request.json[i]
     toupdate = {'$set':make_new}
     db.question.update(query,toupdate)
-    return sub_question(request.json['title'])
+    return dumps({"question updated to": make_new}),200
 
 @app.route('/tankover/api/v1.0/questions/<string:question_id>', methods=['DELETE'])
 @auth.login_required
