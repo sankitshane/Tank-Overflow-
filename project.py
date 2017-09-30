@@ -10,6 +10,8 @@ import pymongo
 from pymongo import MongoClient
 from bson.json_util import dumps,loads
 from flask_httpauth import HTTPBasicAuth
+from bson.objectid import ObjectId
+
 auth = HTTPBasicAuth()
 
 app = Flask(__name__)
@@ -104,7 +106,7 @@ def question():
 @app.route('/tankover/api/v1.0/questions/<string:question_id>', methods=['GET'])
 def sub_question(question_id):
     db = connection.questionhub
-    query = {"title":question_id}
+    query = {"_id":ObjectId(question_id)}
     documents = db.question.find_one(query)
     if documents == None:
         abort(404)
@@ -131,20 +133,27 @@ def newQuestion():
 @auth.login_required
 def edit_question(question_id):
     db = connection.questionhub
-    query = {"title": question_id}
+    query = {"_id": ObjectId(question_id)}
     document = db.question.find_one(query)
     if document == None:
         abort(404)
     if not request.json:
         abort(400)
-    if request.json['title'] != question_id:
+    if ObjectId(request.json['_id']) != ObjectId(question_id):
         abort(400)
     make_new = {}
     for i in request.json:
         if i not in document:
             abort(400)
+        if i == "_id":
+            continue
         make_new[i] = request.json[i]
-    toupdate = {'$set':make_new}
+    if 'answer' in make_new:
+        toupdate = {"$push":make_new}
+    elif 'comments' in make_new:
+        toupdate = {"$push":make_new}
+    else:
+        toupdate = {'$set':make_new}
     db.question.update(query,toupdate)
     return dumps({"question updated to": make_new}),200
 
