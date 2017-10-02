@@ -130,32 +130,41 @@ def newQuestion():
 @app.route('/tankover/api/v1.0/questions/<string:question_id>', methods=['PUT'])
 @auth.login_required
 def edit_question(question_id):
+    print("YES")
     db = connection.questionhub
     query = {"_id": ObjectId(question_id)}
     document = db.question.find_one(query)
     if document == None:
         abort(404)
+    print("YES")
     if not request.json:
         abort(400)
+    print("YES")
     if ObjectId(request.json['_id']) != ObjectId(question_id):
         abort(400)
+    print("YES")
     make_new = {}
     for i in request.json:
+        if i == "_id" or i == "ans_id" or i == "comm_id":
+            continue
         if i not in document:
             abort(400)
-        if i == "_id" or i == "ans_id":
-            continue
         make_new[i] = request.json[i]
+    print("YES")
     if 'answer' in make_new:
-        make_new["answer"]["ans_id"] = ObjectId()
-        toupdate = {"$push":make_new}
+        if "ans_id" not in request.json:
+            make_new["answer"]["ans_id"] = ObjectId()
+            toupdate = {"$push":make_new}
+        else:
+            query = {"_id": ObjectId(question_id),"answer":{"$elemMatch":{"ans_id": ObjectId(request.json['ans_id'])}}}
+            toupdate = {"$push":{"answer.$.comment":make_new['answer']['text']}}
+            db.question.find_and_modify(query=query,update=toupdate)
+            return dumps({"added comment":make_new['answer']['text']}),200
     elif 'comments' in make_new:
         make_new['comments']['comm_id'] = ObjectId()
         toupdate = {"$push":make_new}
-    elif 'answer-comment' in make_new:
-        query = {"_id": ObjectId(question_id),
-                    "answer":{"$elemMatch":{"ans_id":request.json['ans_id']}}}
-        toupdate = {"$push":{"answer.$.comments":make_new}}
+    elif 'ans_id' in request.json:
+
     else:
         toupdate = {'$set':make_new}
     db.question.update(query,toupdate)
