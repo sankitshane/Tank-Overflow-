@@ -43,7 +43,7 @@ def post():
 @app.route('/tankover/api/v1.0/posts/<string:post_id>', methods=['GET'])
 def sub_post(post_id):
     db = connection.posthub
-    query = {"title":post_id}
+    query = {"_id":ObjectId(post_id)}
     documents = db.post.find_one(query)
     if documents == None:
         abort(404)
@@ -67,28 +67,26 @@ def newpost():
 @auth.login_required
 def update_post(post_id):
     db = connection.posthub
-    query = {"title": post_id}
+    query = {"_id": ObjectId(post_id)}
     document = db.post.find_one(query)
     if document == None:
         abort(404)
     if not request.json:
         abort(400)
-    if 'title' in request.json and type(request.json['title']) != unicode:
-        abort(400)
-    if 'description' in request.json and type(request.json['description']) is not unicode:
+    if ObjectId(request.json['_id']) != ObjectId(question_id):
         abort(400)
     make_new = {}
     for i in request.json:
         make_new[i] = request.json[i]
     toupdate = {'$set':make_new}
     db.post.update(query,toupdate)
-    return sub_post(request.json['title'])
+    return sub_post(request.json['_id'])
 
 @app.route('/tankover/api/v1.0/posts/<string:post_id>', methods=['DELETE'])
 @auth.login_required
 def delete_post(post_id):
     db = connection.posthub
-    query = {'title':post_id}
+    query = {'_id':ObjectId(post_id)}
     document = db.post.find_one(query)
     if document == None:
         abort(404)
@@ -145,13 +143,19 @@ def edit_question(question_id):
     for i in request.json:
         if i not in document:
             abort(400)
-        if i == "_id":
+        if i == "_id" or i == "ans_id":
             continue
         make_new[i] = request.json[i]
     if 'answer' in make_new:
+        make_new["answer"]["ans_id"] = ObjectId()
         toupdate = {"$push":make_new}
     elif 'comments' in make_new:
+        make_new['comments']['comm_id'] = ObjectId()
         toupdate = {"$push":make_new}
+    elif 'answer-comment' in make_new:
+        query = {"_id": ObjectId(question_id),
+                    "answer":{"$elemMatch":{"ans_id":request.json['ans_id']}}}
+        toupdate = {"$push":{"answer.$.comments":make_new}}
     else:
         toupdate = {'$set':make_new}
     db.question.update(query,toupdate)
@@ -161,7 +165,7 @@ def edit_question(question_id):
 @auth.login_required
 def delete_question(question_id):
     db = connection.questionhub
-    query = {'title':question_id}
+    query = {'_id':ObjectId(question_id)}
     document = db.question.find_one(query)
     if document == None:
         abort(404)
@@ -178,7 +182,7 @@ def blog():
 @app.route('/tankover/api/v1.0/blogs/<string:blog_id>', methods=['GET'])
 def sub_blog(blog_id):
     db = connection.bloghub
-    query = {"title":blog_id}
+    query = {"_id":ObjectId(blog_id)}
     documents = db.blog.find_one(query)
     if documents == None:
         abort(404)
