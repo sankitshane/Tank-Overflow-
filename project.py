@@ -157,14 +157,21 @@ def edit_question(question_id):
             toupdate = {"$push":make_new}
         else:
             query = {"_id": ObjectId(question_id),"answer":{"$elemMatch":{"ans_id": ObjectId(request.json['ans_id'])}}}
-            toupdate = {"$push":{"answer.$.comment":make_new['answer']['text']}}
+            if len(request.json['answer']) == 1:
+                toupdate = {"$push":{"answer.$.comment":make_new['answer']['text']}}
+            else:
+                toupdate = {'$set':{"answer":make_new['answer']}}
             db.question.find_and_modify(query=query,update=toupdate)
-            return dumps({"added comment":make_new['answer']['text']}),200
+            return dumps({"Added":make_new['answer']['text']}),200
     elif 'comments' in make_new:
-        make_new['comments']['comm_id'] = ObjectId()
-        toupdate = {"$push":make_new}
-    elif 'ans_id' in request.json:
-
+        if "comm_id" not in request.json:
+            make_new['comments']['comm_id'] = ObjectId()
+            toupdate = {"$push":make_new}
+        else:
+            query = {"_id": ObjectId(question_id),"comments":{"$elemMatch":{"comm_id": ObjectId(request.json['comm_id'])}}}
+            toupdate = {"$set":{"comments.$.text":make_new['comments']['text']}}
+            db.question.find_and_modify(query=query,update=toupdate)
+            return dumps({"Updated comment":make_new['comments']['text']}),200
     else:
         toupdate = {'$set':make_new}
     db.question.update(query,toupdate)
