@@ -113,6 +113,7 @@ def sub_question(question_id):
 @app.route('/tankover/api/v1.0/questions', methods=['POST'])
 @auth.login_required
 def newQuestion():
+    print(request.json)
     if not request.json or not 'title' in request.json:
         abort(400)
     tags = request.json['tags'].split()
@@ -130,19 +131,15 @@ def newQuestion():
 @app.route('/tankover/api/v1.0/questions/<string:question_id>', methods=['PUT'])
 @auth.login_required
 def edit_question(question_id):
-    print("YES")
     db = connection.questionhub
     query = {"_id": ObjectId(question_id)}
     document = db.question.find_one(query)
     if document == None:
         abort(404)
-    print("YES")
     if not request.json:
         abort(400)
-    print("YES")
     if ObjectId(request.json['_id']) != ObjectId(question_id):
         abort(400)
-    print("YES")
     make_new = {}
     for i in request.json:
         if i == "_id" or i == "ans_id" or i == "comm_id":
@@ -150,19 +147,16 @@ def edit_question(question_id):
         if i not in document:
             abort(400)
         make_new[i] = request.json[i]
-    print("YES")
     if 'answer' in make_new:
         if "ans_id" not in request.json:
-            make_new["answer"]["ans_id"] = ObjectId()
-            toupdate = {"$push":make_new}
+            if "ans_com_id" not in request.json:
+                make_new["answer"]["ans_id"] = ObjectId()
+                toupdate = {"$push":make_new}
         else:
             query = {"_id": ObjectId(question_id),"answer":{"$elemMatch":{"ans_id": ObjectId(request.json['ans_id'])}}}
-            if len(request.json['answer']) == 1:
-                toupdate = {"$push":{"answer.$.comment":make_new['answer']['text']}}
-            else:
-                toupdate = {'$set':{"answer":make_new['answer']}}
+            toupdate = {'$set':{"answer":make_new['answer']}}
             db.question.find_and_modify(query=query,update=toupdate)
-            return dumps({"Added":make_new['answer']['text']}),200
+            return dumps({"Added":make_new['answer']}),200
     elif 'comments' in make_new:
         if "comm_id" not in request.json:
             make_new['comments']['comm_id'] = ObjectId()
@@ -185,7 +179,14 @@ def delete_question(question_id):
     document = db.question.find_one(query)
     if document == None:
         abort(404)
-    db.question.remove(query)
+    if 'ans_id' in request.json:
+        toremove = {"$pull":{"ans_id":request.json['ans_id']}}
+        db.question.update(query,toremove)
+    if 'comm_id' in request.json:
+        toremove = {"$pull":{"comm_id":request.json['comm_id']}}
+        db.question.update(query,toremove)
+    else:
+        db.question.remove(query)
     return jsonify({'result':True})
 
 ##Blog Route
