@@ -54,10 +54,14 @@ def sub_post(post_id):
 def newpost():
     if not request.json or not 'title' in request.json:
         abort(400)
+    tags = request.json['tags'].split()
+    img = request.json['img'].split(",")
     addNew = {
                 "title": request.json['title'],
                 "description":request.json.get('description',''),
-                "tags": request.json['tags']
+                "tags": tags,
+                "images":img,
+                "comments":[]
             }
     db = connection.posthub
     db.post.insert(addNew)
@@ -73,12 +77,24 @@ def update_post(post_id):
         abort(404)
     if not request.json:
         abort(400)
-    if ObjectId(request.json['_id']) != ObjectId(question_id):
+    if ObjectId(request.json['_id']) != ObjectId(post_id):
         abort(400)
     make_new = {}
     for i in request.json:
+        if i == "_id" or i == "comm_id":
+            continue
         make_new[i] = request.json[i]
-    toupdate = {'$set':make_new}
+    if 'comments' in make_new:
+        if "comm_id" not in request.json:
+            make_new['comments']['comm_id'] = ObjectId()
+            toupdate = {"$push":make_new}
+        else:
+            query = {"_id": ObjectId(post_id),"comments":{"$elemMatch":{"comm_id": ObjectId(request.json['comm_id'])}}}
+            toupdate = {"$set":{"comments.$.text":make_new['comments']['text']}}
+            print(db.post.find_and_modify(query=query,update=toupdate))
+            return dumps({"Updated comment":make_new['comments']['text']}),200
+    else:
+        toupdate = {'$set':make_new}
     db.post.update(query,toupdate)
     return sub_post(request.json['_id'])
 
@@ -90,7 +106,11 @@ def delete_post(post_id):
     document = db.post.find_one(query)
     if document == None:
         abort(404)
-    db.post.remove(query)
+    if 'comm_id' in request.json:
+        toremove = {"$pull":{"comments":{"comm_id": ObjectId(request.json['comm_id'])}}}
+        db.post.update(query,toremove)
+    else:
+        db.post.remove(query)
     return jsonify({'result':True})
 
 
@@ -180,10 +200,10 @@ def delete_question(question_id):
     if document == None:
         abort(404)
     if 'ans_id' in request.json:
-        toremove = {"$pull":{"ans_id":request.json['ans_id']}}
+        toremove = {"$pull":{"answer":{"ans_id":ObjectId(request.json['ans_id'])}}}
         db.question.update(query,toremove)
     if 'comm_id' in request.json:
-        toremove = {"$pull":{"comm_id":request.json['comm_id']}}
+        toremove = {"$pull":{"comments":{"comm_id":ObjectId(request.json['comm_id'])}}}
         db.question.update(query,toremove)
     else:
         db.question.remove(query)
