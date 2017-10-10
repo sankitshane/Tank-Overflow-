@@ -61,6 +61,7 @@ def newpost():
                 "description":request.json.get('description',''),
                 "tags": tags,
                 "images":img,
+                "likes":0,
                 "comments":[]
             }
     db = connection.posthub
@@ -209,42 +210,99 @@ def delete_question(question_id):
         db.question.remove(query)
     return jsonify({'result':True})
 
-##Blog Route
-@app.route('/tankover/api/v1.0/blogs',methods=['GET'])
-def blog():
-    db = connection.bloghub
-    documents = [doc for doc in db.blog.find({})]
+##info Route
+@app.route('/tankover/api/v1.0/info/disease',methods=['GET'])
+def info():
+    db = connection.infohub
+    documents = [doc for doc in db.info.find({"infotab":"disease"})]
     return dumps({'cursor': documents})
 
-@app.route('/tankover/api/v1.0/blogs/<string:blog_id>', methods=['GET'])
-def sub_blog(blog_id):
-    db = connection.bloghub
-    query = {"_id":ObjectId(blog_id)}
-    documents = db.blog.find_one(query)
+@app.route('/tankover/api/v1.0/info/fish',methods=['GET'])
+def info():
+    db = connection.infohub
+    documents = [doc for doc in db.info.find({"infotab":"fish"})]
+    return dumps({'cursor': documents})
+
+@app.route('/tankover/api/v1.0/info/plants',methods=['GET'])
+def info():
+    db = connection.infohub
+    documents = [doc for doc in db.info.find({"infotab":"plants"})]
+    return dumps({'cursor': documents})
+
+@app.route('/tankover/api/v1.0/info/<string:info_id>', methods=['GET'])
+def sub_info(info_id):
+    db = connection.infohub
+    query = {"_id":ObjectId(info_id)}
+    documents = db.info.find_one(query)
     if documents == None:
         abort(404)
     return dumps({'cursor': documents})
 
-@app.route('/tankover/api/v1.0/blogs', methods=['POST'])
+@app.route('/tankover/api/v1.0/info/<string:dtype>', methods=['POST'])
 @auth.login_required
-def newBlog():
-    if not request.json or not 'title' in request.json:
+def newinfo(dtype):
+    if not request.json or not 'name' in request.json:
         abort(400)
-    addNew = {
-                "title": request.json['title'],
+    img = request.json['images'].strip(",")
+    if dtype == "disease":
+        ident = request.json['identify'].split(",")
+        treat = request.json['treatment'].split(",")
+        addNew = {
+                "name": request.json['name'],
                 "description":request.json.get('description',''),
-                "tags": request.json['tags']
+                "images": img,
+                "identification": ident,
+                "treatment": treat,
+                "crowd opinion": []
             }
-    db = connection.bloghub
-    db.blog.insert(addNew)
-    return dumps({'blog':addNew}),201
+    elif dtype == "fish":
+        addNew = {
+                "name": request.json['name'],
+                "overview": request.json.get('description',''),
+                "images":img,
+                "quick stat":{
+                    "Minimun tank size": request.json['qstat'][0],
+                    "Care level": request.json['qstat'][1],
+                    "Temperament": request.json['qstat'][2],
+                    "Water temp": request.json['qstat'][3],
+                    "Water hardnest": request.json['qstat'][4],
+                    "Water pH": request.json['qstat'][5],
+                    "Max size": request.json['qstat'][6],
+                    "Diet": request.json['qstat'][7],
+                    "Origin": request.json['qstat'][8],
+                    "Family": request.json['qstat'][9]
+                }
+                "crowd opinion": []
+        }
+    else:
+        addNew = {
+                "name":request.json['name'],
+                "overview": request.json['description'],
+                "images":img,
+                "quick stat":{
+                    "Care level": request.json['qstat'][0],
+                    "Lighting": request.json['qstat'][1],
+                    "Placement": request.json['qstat'][2],
+                    "Water temp": request.json['qstat'][3],
+                    "Water hardnest": request.json['qstat'][4],
+                    "Water pH": request.json['qstat'][5],
+                    "Propagation": request.json['qstat'][6],
+                    "Max size": request.json['qstat'][7],
+                    "Origin": request.json['qstat'][8],
+                    "Family": request.json['qstat'][9]
+                }
+                "crowd opinion":[]
+            }
+    db = connection.infohub
+    db.info.insert(addNew)
+    return dumps({'info':addNew}),201
 
-@app.route('/tankover/api/v1.0/blogs/<string:blog_id>', methods=['PUT'])
+@app.route('/tankover/api/v1.0/infos/<string:info_id>', methods=['PUT'])
 @auth.login_required
-def edit_blog(blog_id):
-    db = connection.bloghub
-    query = {"title": blog_id}
-    document = db.blog.find_one(query)
+def edit_info(info_id):
+    db = connection.infohub
+    query = {"title": info_id}
+    document = db.info.find_one(query)
     if document == None:
         abort(404)
     if not request.json:
@@ -257,18 +315,18 @@ def edit_blog(blog_id):
     for i in request.json:
         make_new[i] = request.json[i]
     toupdate = {'$set':make_new}
-    db.blog.update(query,toupdate)
-    return sub_blog(request.json['title'])
+    db.info.update(query,toupdate)
+    return sub_info(request.json['title'])
 
-@app.route('/tankover/api/v1.0/blogs/<string:blog_id>', methods=['DELETE'])
+@app.route('/tankover/api/v1.0/infos/<string:info_id>', methods=['DELETE'])
 @auth.login_required
-def delete_blog(blog_id):
-    db = connection.bloghub
-    query = {'title':blog_id}
-    document = db.blog.find_one(query)
+def delete_info(info_id):
+    db = connection.infohub
+    query = {'title':info_id}
+    document = db.info.find_one(query)
     if document == None:
         abort(404)
-    db.blog.remove(query)
+    db.info.remove(query)
     return jsonify({'result':True})
 
 ##Projects Route
@@ -324,7 +382,7 @@ def edit_project(proj_id):
 
 @app.route('/tankover/api/v1.0/projects/<string:proj_id>', methods=['DELETE'])
 @auth.login_required
-def delete_blog(proj_id):
+def delete_info(proj_id):
     db = connection.projecthub
     query = {'title':proj_id}
     document = db.project.find_one(query)
