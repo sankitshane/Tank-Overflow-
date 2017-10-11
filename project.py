@@ -297,36 +297,48 @@ def newinfo(dtype):
     db.info.insert(addNew)
     return dumps({'info':addNew}),201
 
-@app.route('/tankover/api/v1.0/infos/<string:info_id>', methods=['PUT'])
+@app.route('/tankover/api/v1.0/info/<string:info_id>', methods=['PUT'])
 @auth.login_required
 def edit_info(info_id):
     db = connection.infohub
-    query = {"title": info_id}
+    query = {"_id": ObjectId(info_id)}
     document = db.info.find_one(query)
     if document == None:
         abort(404)
     if not request.json:
         abort(400)
-    if 'title' in request.json and type(request.json['title']) != unicode:
-        abort(400)
-    if 'description' in request.json and type(request.json['description']) is not unicode:
+    if ObjectId(request.json['_id']) != ObjectId(info_id):
         abort(400)
     make_new = {}
     for i in request.json:
         make_new[i] = request.json[i]
-    toupdate = {'$set':make_new}
+    if 'opinion' in make_new:
+        if "opinion_id" not in request.json:
+            make_new['opinion']['opinion_id'] = ObjectId()
+            toupdate = {"$push":make_new}
+        else:
+            query = {"_id": ObjectId(info_id),"crowd opinion":{"$elemMatch":{"opinion_id": ObjectId(request.json['opinion_id'])}}}
+            toupdate = {"$set":{"comments.$.text":make_new['opinion']['text']}}
+            db.question.find_and_modify(query=query,update=toupdate)
+            return dumps({"Updated opinion":make_new['opinion']['text']}),200
+    else:
+        toupdate = {'$set':make_new}
     db.info.update(query,toupdate)
-    return sub_info(request.json['title'])
+    return sub_info(request.json['_id'])
 
 @app.route('/tankover/api/v1.0/infos/<string:info_id>', methods=['DELETE'])
 @auth.login_required
 def delete_info(info_id):
     db = connection.infohub
-    query = {'title':info_id}
+    query = {'_id':ObjectId(info_id)}
     document = db.info.find_one(query)
     if document == None:
         abort(404)
-    db.info.remove(query)
+    if 'opinion_id' in request.json:
+        toremove = {"$pull":{"crowd opinion":{"opinion_id":ObjectId(request.json['opinion_id'])}}}
+        db.question.update(query,toremove)
+    else:
+        db.info.remove(query)
     return jsonify({'result':True})
 
 ##Projects Route
