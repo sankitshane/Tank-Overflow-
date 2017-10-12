@@ -351,8 +351,8 @@ def project():
 @app.route('/tankover/api/v1.0/projects/<string:proj_id>', methods=['GET'])
 def sub_project(proj_id):
     db = connection.projecthub
-    query = {"title":proj_id}
-    documents = db.project.find_one(query)
+    query = {"_id": ObjectId(proj_id)}
+    documents = db.project.find_one(query).sort({"post_id":-1})
     if documents == None:
         abort(404)
     return dumps({'cursor': documents})
@@ -365,7 +365,18 @@ def newproject():
     addNew = {
                 "title": request.json['title'],
                 "description":request.json.get('description',''),
-                "tags": request.json['tags']
+                "fish": request.json['fish'],
+                "plants": request.json['plants'],
+                "system": {
+                "Lighting": request.json['system'][0],
+                "Filteration": request.json['system'][1],
+                "CO2": request.json['system'][2],
+                "Substrate": request.json['system'][3],
+                "Hard scape": request.json['system'][4],
+                "Tank size": request.json['system'][5]
+                },
+                "posts":[],
+                "comments":[]
             }
     db = connection.projecthub
     db.project.insert(addNew)
