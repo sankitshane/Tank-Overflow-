@@ -388,20 +388,37 @@ def newproject():
 @auth.login_required
 def edit_project(proj_id):
     db = connection.projecthub
-    query = {"title": proj_id}
+    query = {"_id": ObjectId(proj_id)}
     document = db.project.find_one(query)
     if document == None:
         abort(404)
     if not request.json:
         abort(400)
-    if 'title' in request.json and type(request.json['title']) != unicode:
-        abort(400)
-    if 'description' in request.json and type(request.json['description']) is not unicode:
+    if ObjectId(request.json['_id']) != ObjectId(info_id):
         abort(400)
     make_new = {}
     for i in request.json:
         make_new[i] = request.json[i]
-    toupdate = {'$set':make_new}
+    if 'comment' in make_new:
+        if "comm_id" not in request.json:
+            make_new['comment']['comm_id'] = ObjectId()
+            toupdate = {"$push":make_new}
+        else:
+            query = {"_id": ObjectId(info_id),"comments":{"$elemMatch":{"comm_id": ObjectId(request.json['comm_id'])}}}
+            toupdate = {"$set":{"comments.$.text":make_new['comment']['text']}}
+            db.question.find_and_modify(query=query,update=toupdate)
+            return dumps({"Updated comments":make_new['comment']['text']}),200
+    elif 'post' in make_new:
+        if "post_id" not in request.json:
+            make_new['post']['post_id'] = ObjectId()
+            toupdate = {"$push":make_new}
+        else:
+            query = {"_id": ObjectId(info_id),"posts":{"$elemMatch":{"post_id": ObjectId(request.json['post_id'])}}}
+            toupdate = {"$set":{"posts.$.text":make_new['post']['text']}}
+            db.question.find_and_modify(query=query,update=toupdate)
+            return dumps({"Updated posts":make_new['post']['text']}),200
+    else:
+        toupdate = {'$set':make_new}
     db.project.update(query,toupdate)
     return sub_project(request.json['title'])
 
@@ -409,11 +426,18 @@ def edit_project(proj_id):
 @auth.login_required
 def delete_info(proj_id):
     db = connection.projecthub
-    query = {'title':proj_id}
+    query = {'_id':ObjectId(proj_id)}
     document = db.project.find_one(query)
     if document == None:
         abort(404)
-    db.project.remove(query)
+    if 'comm_id' in request.json:
+        toremove = {"$pull":{"comments":{"comm_id":ObjectId(request.json['comm_id'])}}}
+        db.question.update(query,toremove)
+    elif 'post_id' in request.json:
+        toremove = {"$pull":{"posts":{"post_id":ObjectId(request.json['post_id'])}}}
+        db.question.update(query,toremove)
+    else:
+        db.info.remove(query)
     return jsonify({'result':True})
 
 ##Login Route
