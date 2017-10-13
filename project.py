@@ -265,7 +265,7 @@ def newinfo(dtype):
                     "Care level": request.json['qstat'][1],
                     "Temperament": request.json['qstat'][2],
                     "Water temp": request.json['qstat'][3],
-                    "Water hardnest": request.json['qstat'][4],
+                    "Water hardness": request.json['qstat'][4],
                     "Water pH": request.json['qstat'][5],
                     "Max size": request.json['qstat'][6],
                     "Diet": request.json['qstat'][7],
@@ -284,7 +284,7 @@ def newinfo(dtype):
                     "Lighting": request.json['qstat'][1],
                     "Placement": request.json['qstat'][2],
                     "Water temp": request.json['qstat'][3],
-                    "Water hardnest": request.json['qstat'][4],
+                    "Water hardness": request.json['qstat'][4],
                     "Water pH": request.json['qstat'][5],
                     "Propagation": request.json['qstat'][6],
                     "Max size": request.json['qstat'][7],
@@ -369,13 +369,15 @@ def newproject():
                 "plants": request.json['plants'],
                 "system": {
                 "Lighting": request.json['system'][0],
-                "Filteration": request.json['system'][1],
+                "Filtration": request.json['system'][1],
                 "CO2": request.json['system'][2],
                 "Substrate": request.json['system'][3],
                 "Hard scape": request.json['system'][4],
-                "Tank size": request.json['system'][5]
+                "Tank size": request.json['system'][5],
+                "More tools": request.json['system'][6]
                 },
                 "posts":[],
+                "likes":0,
                 "comments":[]
             }
     db = connection.projecthub
