@@ -33,6 +33,11 @@ def unauthorized():
 def not_found(error):
     return make_response(jsonify({'error':'Not found'}),404)
 
+##demo
+@app.route('/')
+def demo():
+    return dumps({'hello':'world'})
+
 ##Feed Routes
 @app.route('/tankover/api/v1.0/posts', methods=['GET'])
 def post():
@@ -212,19 +217,19 @@ def delete_question(question_id):
 
 ##info Route
 @app.route('/tankover/api/v1.0/info/disease',methods=['GET'])
-def info():
+def infod():
     db = connection.infohub
     documents = [doc for doc in db.info.find({"infotab":"disease"})]
     return dumps({'cursor': documents})
 
 @app.route('/tankover/api/v1.0/info/fish',methods=['GET'])
-def info():
+def infof():
     db = connection.infohub
     documents = [doc for doc in db.info.find({"infotab":"fish"})]
     return dumps({'cursor': documents})
 
 @app.route('/tankover/api/v1.0/info/plants',methods=['GET'])
-def info():
+def infop():
     db = connection.infohub
     documents = [doc for doc in db.info.find({"infotab":"plants"})]
     return dumps({'cursor': documents})
@@ -271,7 +276,7 @@ def newinfo(dtype):
                     "Diet": request.json['qstat'][7],
                     "Origin": request.json['qstat'][8],
                     "Family": request.json['qstat'][9]
-                }
+                },
                 "crowd opinion": []
         }
     else:
@@ -290,7 +295,7 @@ def newinfo(dtype):
                     "Max size": request.json['qstat'][7],
                     "Origin": request.json['qstat'][8],
                     "Family": request.json['qstat'][9]
-                }
+                },
                 "crowd opinion":[]
             }
     db = connection.infohub
@@ -424,7 +429,7 @@ def edit_project(proj_id):
 
 @app.route('/tankover/api/v1.0/projects/<string:proj_id>', methods=['DELETE'])
 @auth.login_required
-def delete_info(proj_id):
+def delete_project(proj_id):
     db = connection.projecthub
     query = {'_id':ObjectId(proj_id)}
     document = db.project.find_one(query)
