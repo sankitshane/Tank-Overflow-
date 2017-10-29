@@ -60,7 +60,7 @@ def newpost():
     if not request.json or not 'title' in request.json:
         abort(400)
     tags = request.json['tags'].split()
-    img = request.json['img'].split(",")
+    img = request.json['images'].split()
     addNew = {
                 "title": request.json['title'],
                 "description":request.json.get('description',''),
@@ -97,7 +97,7 @@ def update_post(post_id):
         else:
             query = {"_id": ObjectId(post_id),"comments":{"$elemMatch":{"comm_id": ObjectId(request.json['comm_id'])}}}
             toupdate = {"$set":{"comments.$.text":make_new['comments']['text']}}
-            print(db.post.find_and_modify(query=query,update=toupdate))
+            db.post.find_and_modify(query=query,update=toupdate)
             return dumps({"Updated comment":make_new['comments']['text']}),200
     else:
         toupdate = {'$set':make_new}
