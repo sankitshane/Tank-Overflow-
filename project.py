@@ -139,7 +139,6 @@ def sub_question(question_id):
 @app.route('/tankover/api/v1.0/questions', methods=['POST'])
 @auth.login_required
 def newQuestion():
-    print(request.json)
     if not request.json or not 'title' in request.json:
         abort(400)
     tags = request.json['tags'].split()
@@ -147,7 +146,7 @@ def newQuestion():
                 "title": request.json['title'],
                 "description":request.json.get('description',''),
                 "tags": tags,
-                "answer": [],
+                "answers":[],
                 "comments":[]
             }
     db = connection.questionhub
@@ -173,16 +172,18 @@ def edit_question(question_id):
         if i not in document:
             abort(400)
         make_new[i] = request.json[i]
-    if 'answer' in make_new:
+    if 'answers' in make_new:
         if "ans_id" not in request.json:
-            if "ans_com_id" not in request.json:
-                make_new["answer"]["ans_id"] = ObjectId()
+            if len(make_new['answers']) == 2:
+                make_new["answers"]["ans_id"] = ObjectId()
                 toupdate = {"$push":make_new}
+            else:
+                abort(400)
         else:
-            query = {"_id": ObjectId(question_id),"answer":{"$elemMatch":{"ans_id": ObjectId(request.json['ans_id'])}}}
-            toupdate = {'$set':{"answer":make_new['answer']}}
+            query = {"_id": ObjectId(question_id),"answers":{"$elemMatch":{"ans_id": ObjectId(request.json['ans_id'])}}}
+            toupdate = {'$set':{"answers.$":make_new['answers']}}
             db.question.find_and_modify(query=query,update=toupdate)
-            return dumps({"Added":make_new['answer']}),200
+            return dumps({"Added":make_new['answers']}),200
     elif 'comments' in make_new:
         if "comm_id" not in request.json:
             make_new['comments']['comm_id'] = ObjectId()
