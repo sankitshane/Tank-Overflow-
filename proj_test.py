@@ -11,6 +11,21 @@ class TestFlaskApiUsingRequests(unittest.TestCase):
         response = requests.get('http://localhost:3000')
         self.assertEqual(response.json(), {'hello': 'world'})
 
+def postfunction(self,funtyp,data):
+    response = requests.post('http://localhost:3000/tankover/api/v1.0/'+funtyp
+                                ,json = (data),
+                                auth=("miguel","python"))
+    self.assertEqual(str(response),"<Response [201]>")
+
+def getfunction(self,funtyp):
+    response = requests.get('http://localhost:3000/tankover/api/v1.0/'+funtyp)
+    self.assertEqual(str(response),"<Response [200]>")
+    return loads(dumps(response.json()['cursor'][0]["_id"]["$oid"]))
+
+def getspecfunction(self,funtyp,spec):
+    response = requests.get('http://localhost:3000/tankover/api/v1.0/'+funtyp+'/'+spec)
+    self.assertEqual(str(response),"<Response [200]>")
+
 class TestApiPost(unittest.TestCase):
     def test_post_check(self):
         postdata = {
@@ -19,17 +34,11 @@ class TestApiPost(unittest.TestCase):
             "tags" : "demotag1 demotag2",
             "images": "demoimage1 demoimage2",
         }
-        response = requests.post('http://localhost:3000/tankover/api/v1.0/posts'
-                                    ,json = (postdata),
-                                    auth=("miguel","python"))
-        self.assertEqual(str(response),"<Response [201]>")
+        postfunction(self,"posts",postdata)
         print("Demo post data insert...")
-        response = requests.get('http://localhost:3000/tankover/api/v1.0/posts')
-        self.assertEqual(str(response),"<Response [200]>")
+        retrive_id = getfunction(self,"posts")
         print("Demo post data retrived...")
-        retrive_id = loads(dumps(response.json()['cursor'][0]["_id"]["$oid"]))
-        response = requests.get('http://localhost:3000/tankover/api/v1.0/posts/'+retrive_id)
-        self.assertEqual(str(response),"<Response [200]>")
+        getspecfunction(self,"posts",retrive_id)
         print("Demo post data retrived specific...")
         response = requests.put('http://localhost:3000/tankover/api/v1.0/posts/'+retrive_id
                                 ,json={"_id":retrive_id,"title":"Demo title New"}
@@ -61,17 +70,11 @@ class TestApiQuestions(unittest.TestCase):
             "description": "Demo description of random topic",
             "tags" : "demotag1 demotag2"
         }
-        response = requests.post('http://localhost:3000/tankover/api/v1.0/questions'
-                                    ,json = (questiondata),
-                                    auth=("miguel","python"))
-        self.assertEqual(str(response),"<Response [201]>")
+        postfunction(self,"questions",questiondata)
         print("Demo question data insert...")
-        response = requests.get('http://localhost:3000/tankover/api/v1.0/questions')
-        self.assertEqual(str(response),"<Response [200]>")
+        retrive_id = getfunction(self,"questions")
         print("Demo question data retrived...")
-        retrive_id = loads(dumps(response.json()['cursor'][0]["_id"]["$oid"]))
-        response = requests.get('http://localhost:3000/tankover/api/v1.0/questions/'+retrive_id)
-        self.assertEqual(str(response),"<Response [200]>")
+        getspecfunction(self,"questions",retrive_id)
         print("Demo question data retrived specific...")
         response = requests.put('http://localhost:3000/tankover/api/v1.0/questions/'+retrive_id
                                 ,json={"_id":retrive_id,"title":"Demo title New"}
