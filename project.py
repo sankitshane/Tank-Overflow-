@@ -102,7 +102,7 @@ def update_post(post_id):
     else:
         toupdate = {'$set':make_new}
     db.post.update(query,toupdate)
-    return sub_post(request.json['_id'])
+    return dumps({"cursor": make_new}),200
 
 @app.route('/tankover/api/v1.0/posts/<string:post_id>', methods=['DELETE'])
 @auth.login_required
@@ -196,7 +196,7 @@ def edit_question(question_id):
     else:
         toupdate = {'$set':make_new}
     db.question.update(query,toupdate)
-    return dumps({"question updated to": make_new}),200
+    return dumps({"cursor": make_new}),200
 
 @app.route('/tankover/api/v1.0/questions/<string:question_id>', methods=['DELETE'])
 @auth.login_required
