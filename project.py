@@ -358,7 +358,7 @@ def project():
 def sub_project(proj_id):
     db = connection.projecthub
     query = {"_id": ObjectId(proj_id)}
-    documents = db.project.find_one(query).sort({"post_id":-1})
+    documents = db.project.find_one(query)
     if documents == None:
         abort(404)
     return dumps({'cursor': documents})
@@ -368,11 +368,13 @@ def sub_project(proj_id):
 def newproject():
     if not request.json or not 'title' in request.json:
         abort(400)
+    fish = request.json['fish'].split()
+    plant = request.json['plant'].split()
     addNew = {
                 "title": request.json['title'],
                 "description":request.json.get('description',''),
-                "fish": request.json['fish'],
-                "plants": request.json['plants'],
+                "fish": fish,
+                "plants": plant,
                 "system": {
                 "Lighting": request.json['system'][0],
                 "Filtration": request.json['system'][1],
@@ -400,10 +402,14 @@ def edit_project(proj_id):
         abort(404)
     if not request.json:
         abort(400)
-    if ObjectId(request.json['_id']) != ObjectId(info_id):
+    if ObjectId(request.json['_id']) != ObjectId(proj_id):
         abort(400)
     make_new = {}
     for i in request.json:
+        if i == "_id" or i == "comm_id":
+            continue
+        if i not in document:
+            abort(400)
         make_new[i] = request.json[i]
     if 'comment' in make_new:
         if "comm_id" not in request.json:
@@ -426,7 +432,7 @@ def edit_project(proj_id):
     else:
         toupdate = {'$set':make_new}
     db.project.update(query,toupdate)
-    return sub_project(request.json['title'])
+    return dumps({"cursor": make_new}),200
 
 @app.route('/tankover/api/v1.0/projects/<string:proj_id>', methods=['DELETE'])
 @auth.login_required

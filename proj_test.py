@@ -107,6 +107,21 @@ class TestApiQuestions(unittest.TestCase):
         updateAnswer(self,"questions",retrive_id,answer_id)
         deleteFunction(self,"questions",retrive_id)
 
+class TestApiProject(unittest.TestCase):
+    def test_project_test(self):
+        projectdata = {
+            "title": "New Project",
+            "description": "Demo description of random topic",
+            "fish": "demofish1 demofish2",
+            "plant": "demoplant1 demoplant2",
+            "system" : ["Medium","canister","YES","ADA Amozonia","Drogon stone","18x18x15","aquascaping tools"]
+        }
+        postFunction(self,"projects",projectdata)
+        retrive_id = getFunction(self,"projects")
+        getSpecFunction(self,"projects",retrive_id)
+        updateFunction(self,"projects",retrive_id)
+        comment_id = addComments(self,"projects",retrive_id)
+
 
 if __name__ == "__main__":
     unittest.main()
