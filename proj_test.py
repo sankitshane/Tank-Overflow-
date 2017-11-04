@@ -61,6 +61,21 @@ def updateAnswer(self,funtyp,spec,spec_ans):
     self.assertEqual(str(response),"<Response [200]>")
     print("Demo "+funtyp+" data Answer Updated...")
 
+def addPost(self,funtyp,spec):
+    response = requests.put('http://localhost:3000/tankover/api/v1.0/'+funtyp+'/'+spec
+                            ,json={"_id":spec,"posts":{"link":"object id of post"}}
+                            ,auth=('miguel','python'))
+    self.assertEqual(str(response),"<Response [200]>")
+    print("Demo "+funtyp+" data post Added...")
+    return loads(dumps(response.json()['cursor']['posts']['post_id']))
+
+def updatepost(self,funtyp,spec,spec_ans):
+    response = requests.put('http://localhost:3000/tankover/api/v1.0/'+funtyp+'/'+spec
+                            ,json={"_id":spec, "post_id": str(spec_ans),"posts":{"link":"New updated object id"}}
+                            ,auth=('miguel','python'))
+    self.assertEqual(str(response),"<Response [200]>")
+    print("Demo "+funtyp+" data post Updated...")
+
 def deleteFunction(self,funtyp,spec):
     response = requests.delete('http://localhost:3000/tankover/api/v1.0/'+funtyp+'/'+spec
                                 ,json = ({})
@@ -68,6 +83,22 @@ def deleteFunction(self,funtyp,spec):
     self.assertEqual(response.json(), {'result':True})
     print("Demo "+funtyp+" data Deleted...")
     print("\n")
+
+def deleteFeature(self,funtyp,feature,spec,spec_id):
+    if feature == "comment":
+        response = requests.delete('http://localhost:3000/tankover/api/v1.0/'+funtyp+'/'+spec
+                                    ,json = {"comm_id":str(spec_id)}
+                                    ,auth=("miguel","python"))
+    if feature == "answer":
+        response = requests.delete('http://localhost:3000/tankover/api/v1.0/'+funtyp+'/'+spec
+                                    ,json = {"ans_id":str(spec_id)}
+                                    ,auth=("miguel","python"))
+    if feature == "post":
+        response = requests.delete('http://localhost:3000/tankover/api/v1.0/'+funtyp+'/'+spec
+                                    ,json = {"post_id":str(spec_id)}
+                                    ,auth=("miguel","python"))
+    self.assertEqual(response.json(), {'result':True})
+    print("Demo "+funtyp+" "+feature+" data Deleted...")
 
 class TestFlaskApiUsingRequests(unittest.TestCase):
     def test_hello_world(self):
@@ -88,6 +119,7 @@ class TestApiPost(unittest.TestCase):
         updateFunction(self,"posts",retrive_id)
         comment_id = addComments(self,"posts",retrive_id)
         updateComment(self,"posts",retrive_id,comment_id)
+        deleteFeature(self,"posts","comment",retrive_id,comment_id)
         deleteFunction(self,"posts",retrive_id)
 
 class TestApiQuestions(unittest.TestCase):
@@ -105,6 +137,8 @@ class TestApiQuestions(unittest.TestCase):
         updateComment(self,"questions",retrive_id,comment_id)
         answer_id = addAnswer(self,"questions",retrive_id)
         updateAnswer(self,"questions",retrive_id,answer_id)
+        deleteFeature(self,"questions","comment",retrive_id,comment_id)
+        deleteFeature(self,"questions","answer",retrive_id,answer_id)
         deleteFunction(self,"questions",retrive_id)
 
 class TestApiProject(unittest.TestCase):
@@ -121,7 +155,12 @@ class TestApiProject(unittest.TestCase):
         getSpecFunction(self,"projects",retrive_id)
         updateFunction(self,"projects",retrive_id)
         comment_id = addComments(self,"projects",retrive_id)
-
+        updateComment(self,"projects",retrive_id,comment_id)
+        post_id = addPost(self,"projects",retrive_id)
+        updatepost(self,"projects",retrive_id,post_id)
+        deleteFeature(self,"projects","comment",retrive_id,comment_id)
+        deleteFeature(self,"projects","post",retrive_id,post_id)
+        deleteFunction(self,"projects",retrive_id)
 
 if __name__ == "__main__":
     unittest.main()

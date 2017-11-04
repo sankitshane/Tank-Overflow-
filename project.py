@@ -181,7 +181,7 @@ def edit_question(question_id):
                 abort(400)
         else:
             query = {"_id": ObjectId(question_id),"answers":{"$elemMatch":{"ans_id": ObjectId(request.json['ans_id'])}}}
-            toupdate = {'$set':{"answers.$":make_new['answers']}}
+            toupdate = {'$set':{"answers.$.text":make_new['answers']['text'],"answers.$.votes":make_new['answers']['votes']}}
             db.question.find_and_modify(query=query,update=toupdate)
             return dumps({"Added":make_new['answers']}),200
     elif 'comments' in make_new:
@@ -207,9 +207,9 @@ def delete_question(question_id):
     if document == None:
         abort(404)
     if 'ans_id' in request.json:
-        toremove = {"$pull":{"answer":{"ans_id":ObjectId(request.json['ans_id'])}}}
+        toremove = {"$pull":{"answers":{"ans_id":ObjectId(request.json['ans_id'])}}}
         db.question.update(query,toremove)
-    if 'comm_id' in request.json:
+    elif 'comm_id' in request.json:
         toremove = {"$pull":{"comments":{"comm_id":ObjectId(request.json['comm_id'])}}}
         db.question.update(query,toremove)
     else:
@@ -406,29 +406,29 @@ def edit_project(proj_id):
         abort(400)
     make_new = {}
     for i in request.json:
-        if i == "_id" or i == "comm_id":
+        if i == "_id" or i == "comm_id" or i == "post_id":
             continue
         if i not in document:
             abort(400)
         make_new[i] = request.json[i]
-    if 'comment' in make_new:
+    if 'comments' in make_new:
         if "comm_id" not in request.json:
-            make_new['comment']['comm_id'] = ObjectId()
+            make_new['comments']['comm_id'] = ObjectId()
             toupdate = {"$push":make_new}
         else:
-            query = {"_id": ObjectId(info_id),"comments":{"$elemMatch":{"comm_id": ObjectId(request.json['comm_id'])}}}
-            toupdate = {"$set":{"comments.$.text":make_new['comment']['text']}}
-            db.question.find_and_modify(query=query,update=toupdate)
-            return dumps({"Updated comments":make_new['comment']['text']}),200
-    elif 'post' in make_new:
+            query = {"_id": ObjectId(proj_id),"comments":{"$elemMatch":{"comm_id": ObjectId(request.json['comm_id'])}}}
+            toupdate = {"$set":{"comments.$.text":make_new['comments']['text']}}
+            db.project.find_and_modify(query=query,update=toupdate)
+            return dumps({"Updated comment":make_new['comments']['text']}),200
+    elif 'posts' in make_new:
         if "post_id" not in request.json:
-            make_new['post']['post_id'] = ObjectId()
+            make_new['posts']['post_id'] = ObjectId()
             toupdate = {"$push":make_new}
         else:
-            query = {"_id": ObjectId(info_id),"posts":{"$elemMatch":{"post_id": ObjectId(request.json['post_id'])}}}
-            toupdate = {"$set":{"posts.$.text":make_new['post']['text']}}
-            db.question.find_and_modify(query=query,update=toupdate)
-            return dumps({"Updated posts":make_new['post']['text']}),200
+            query = {"_id": ObjectId(proj_id),"posts":{"$elemMatch":{"post_id": ObjectId(request.json['post_id'])}}}
+            toupdate = {"$set":{"posts.$.link":make_new['posts']['link']}}
+            db.project.find_and_modify(query=query,update=toupdate)
+            return dumps({"Updated posts":make_new['posts']['link']}),200
     else:
         toupdate = {'$set':make_new}
     db.project.update(query,toupdate)
@@ -444,12 +444,12 @@ def delete_project(proj_id):
         abort(404)
     if 'comm_id' in request.json:
         toremove = {"$pull":{"comments":{"comm_id":ObjectId(request.json['comm_id'])}}}
-        db.question.update(query,toremove)
+        db.project.update(query,toremove)
     elif 'post_id' in request.json:
         toremove = {"$pull":{"posts":{"post_id":ObjectId(request.json['post_id'])}}}
-        db.question.update(query,toremove)
+        db.project.update(query,toremove)
     else:
-        db.info.remove(query)
+        db.project.remove(query)
     return jsonify({'result':True})
 
 ##Login Route
