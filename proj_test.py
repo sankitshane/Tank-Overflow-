@@ -81,13 +81,27 @@ def updatepost(self,funtyp,spec,spec_ans):
     self.assertEqual(str(response),"<Response [200]>")
     print("Demo "+funtyp+" data post Updated...")
 
+def addOpinion(self,funtyp,spec):
+    response = requests.put('http://localhost:3000/tankover/api/v1.0/'+funtyp+'/'+spec
+                            ,json={"_id":spec,"crowd opinion":{"text":"that what i think about"}}
+                            ,auth=('miguel','python'))
+    self.assertEqual(str(response),"<Response [200]>")
+    print("Demo "+funtyp+" data opinion Added...")
+    return loads(dumps(response.json()['cursor']['crowd opinion']['opinion_id']))
+
+def updateOpinion(self,funtyp,spec,spec_op):
+    response = requests.put('http://localhost:3000/tankover/api/v1.0/'+funtyp+'/'+spec
+                            ,json={"_id":spec, "opinion_id": str(spec_op),"crowd opinion":{"text":"that what i think about updated"}}
+                            ,auth=('miguel','python'))
+    self.assertEqual(str(response),"<Response [200]>")
+    print("Demo "+funtyp+" data opinion Updated...")
+
 def deleteFunction(self,funtyp,spec):
     response = requests.delete('http://localhost:3000/tankover/api/v1.0/'+funtyp+'/'+spec
                                 ,json = ({})
                                 ,auth=("miguel","python"))
     self.assertEqual(response.json(), {'result':True})
     print("Demo "+funtyp+" data Deleted...")
-    print("\n")
 
 def deleteFeature(self,funtyp,feature,spec,spec_id):
     response = requests.delete('http://localhost:3000/tankover/api/v1.0/'+funtyp+'/'+spec
@@ -117,6 +131,7 @@ class TestApiPost(unittest.TestCase):
         updateComment(self,"posts",retrive_id,comment_id)
         deleteFeature(self,"posts","comm_id",retrive_id,comment_id)
         deleteFunction(self,"posts",retrive_id)
+        print("\n")
 
 class TestApiQuestions(unittest.TestCase):
     def test_question_check(self):
@@ -136,6 +151,7 @@ class TestApiQuestions(unittest.TestCase):
         deleteFeature(self,"questions","comm_id",retrive_id,comment_id)
         deleteFeature(self,"questions","ans_id",retrive_id,answer_id)
         deleteFunction(self,"questions",retrive_id)
+        print("\n")
 
 class TestApiProject(unittest.TestCase):
     def test_project_check(self):
@@ -157,24 +173,25 @@ class TestApiProject(unittest.TestCase):
         deleteFeature(self,"projects","comm_id",retrive_id,comment_id)
         deleteFeature(self,"projects","post_id",retrive_id,post_id)
         deleteFunction(self,"projects",retrive_id)
+        print("\n")
 
 class TestApiInfo(unittest.TestCase):
     def test_info_check(self):
         disease_data = {
-            "name":"Disease Name",
+            "title":"Disease Name",
             "description": "Disease description on the page",
             "images": "demoimage1,demoimage2",
             "identify": "identify1,identify2",
             "treatment": "treatment1,treatment2"
         }
         fish_data = {
-            "name": "Neon Tetra",
+            "title": "Neon Tetra",
             "description": "nano fish with bright neon blue color",
             "images": "demoimage1,demoimage2",
             "qstat": [10,"Easy","Peaceful","68-78F","KH 4-8","pH 5-7","2'","Omnivore","Malaysia","Characidae"]
         }
         plant_data = {
-            "name": "Dwarf Hairgrass",
+            "title": "Dwarf Hairgrass",
             "description": "Dwarf Hairgrass is a great plant for beginners and seasoned aquarium keepers alike",
             "images": "demoimage1,demoimage2",
             "qstat": [" Moderate"," Moderate","Foreground","70-83F","KH 4-8","pH 6.5-7.5","Runners","4'","USA","Cyperaceae"]
@@ -182,7 +199,20 @@ class TestApiInfo(unittest.TestCase):
         postFunction(self,"info",disease_data,"disease")
         postFunction(self,"info",fish_data,"fish")
         postFunction(self,"info",plant_data,"plant")
-
+        retrive_dieases_id = getFunction(self,"info/disease")
+        retrive_fish_id = getFunction(self,"info/fish")
+        retrive_plant_id = getFunction(self,"info/plant")
+        getSpecFunction(self,"info",retrive_dieases_id)
+        getSpecFunction(self,"info",retrive_fish_id)
+        getSpecFunction(self,"info",retrive_plant_id)
+        updateFunction(self,"info",retrive_dieases_id)
+        opinion_id = addOpinion(self,"info",retrive_dieases_id)
+        updateOpinion(self,"info",retrive_dieases_id,opinion_id)
+        deleteFeature(self,"info","opinion_id",retrive_dieases_id,opinion_id)
+        deleteFunction(self,"info",retrive_dieases_id)
+        deleteFunction(self,"info",retrive_fish_id)
+        deleteFunction(self,"info",retrive_plant_id)
+        print("\n")
 
 if __name__ == "__main__":
     unittest.main()

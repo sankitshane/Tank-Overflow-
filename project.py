@@ -247,7 +247,7 @@ def sub_info(info_id):
 @app.route('/tankover/api/v1.0/info/<string:dtype>', methods=['POST'])
 @auth.login_required
 def newinfo(dtype):
-    if not request.json or not 'name' in request.json:
+    if not request.json or not 'title' in request.json:
         abort(400)
     img = request.json['images'].strip(",")
     if dtype == "disease":
@@ -255,7 +255,7 @@ def newinfo(dtype):
         treat = request.json['treatment'].split(",")
         addNew = {
                 "infotab" : "disease",
-                "name": request.json['name'],
+                "title": request.json['title'],
                 "description":request.json.get('description',''),
                 "images": img,
                 "identification": ident,
@@ -265,7 +265,7 @@ def newinfo(dtype):
     if dtype == "fish":
         addNew = {
                 "infotab": "fish",
-                "name": request.json['name'],
+                "title": request.json['title'],
                 "overview": request.json.get('description',''),
                 "images":img,
                 "quick stat":{
@@ -285,7 +285,7 @@ def newinfo(dtype):
     if dtype == "plant":
         addNew = {
                 "infotab": "plant",
-                "name":request.json['name'],
+                "title":request.json['title'],
                 "overview": request.json['description'],
                 "images":img,
                 "quick stat":{
@@ -320,22 +320,26 @@ def edit_info(info_id):
         abort(400)
     make_new = {}
     for i in request.json:
+        if i == "_id" or i == "opinion_id":
+            continue
+        if i not in document:
+            abort(400)
         make_new[i] = request.json[i]
-    if 'opinion' in make_new:
+    if 'crowd opinion' in make_new:
         if "opinion_id" not in request.json:
-            make_new['opinion']['opinion_id'] = ObjectId()
+            make_new['crowd opinion']['opinion_id'] = ObjectId()
             toupdate = {"$push":make_new}
         else:
             query = {"_id": ObjectId(info_id),"crowd opinion":{"$elemMatch":{"opinion_id": ObjectId(request.json['opinion_id'])}}}
-            toupdate = {"$set":{"comments.$.text":make_new['opinion']['text']}}
-            db.question.find_and_modify(query=query,update=toupdate)
-            return dumps({"Updated opinion":make_new['opinion']['text']}),200
+            toupdate = {"$set":{"crowd opinion.$.text":make_new['crowd opinion']['text']}}
+            db.info.find_and_modify(query=query,update=toupdate)
+            return dumps({"Updated opinion":make_new['crowd opinion']['text']}),200
     else:
         toupdate = {'$set':make_new}
     db.info.update(query,toupdate)
-    return sub_info(request.json['_id'])
+    return dumps({"cursor": make_new}),200
 
-@app.route('/tankover/api/v1.0/infos/<string:info_id>', methods=['DELETE'])
+@app.route('/tankover/api/v1.0/info/<string:info_id>', methods=['DELETE'])
 @auth.login_required
 def delete_info(info_id):
     db = connection.infohub
@@ -345,7 +349,7 @@ def delete_info(info_id):
         abort(404)
     if 'opinion_id' in request.json:
         toremove = {"$pull":{"crowd opinion":{"opinion_id":ObjectId(request.json['opinion_id'])}}}
-        db.question.update(query,toremove)
+        db.info.update(query,toremove)
     else:
         db.info.remove(query)
     return jsonify({'result':True})
