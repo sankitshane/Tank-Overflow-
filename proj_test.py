@@ -6,12 +6,17 @@ from bson.objectid import ObjectId
 
 app_test = Flask(__name__)
 
-def postFunction(self,funtyp,data):
-    response = requests.post('http://localhost:3000/tankover/api/v1.0/'+funtyp
-                                ,json = (data),
-                                auth=("miguel","python"))
+def postFunction(self,funtyp,data,dtype):
+    if dtype == "":
+        response = requests.post('http://localhost:3000/tankover/api/v1.0/'+funtyp
+                                    ,json = (data),
+                                    auth=("miguel","python"))
+    else:
+        response = requests.post('http://localhost:3000/tankover/api/v1.0/'+funtyp+"/"+dtype
+                                    ,json = (data),
+                                    auth=("miguel","python"))
     self.assertEqual(str(response),"<Response [201]>")
-    print("Demo "+ funtyp +" data insert...")
+    print("Demo "+ funtyp+" "+dtype  +" data insert...")
 
 def getFunction(self,funtyp):
     response = requests.get('http://localhost:3000/tankover/api/v1.0/'+funtyp)
@@ -104,7 +109,7 @@ class TestApiPost(unittest.TestCase):
             "tags" : "demotag1 demotag2",
             "images": "demoimage1 demoimage2",
         }
-        postFunction(self,"posts",postdata)
+        postFunction(self,"posts",postdata,"")
         retrive_id = getFunction(self,"posts")
         getSpecFunction(self,"posts",retrive_id)
         updateFunction(self,"posts",retrive_id)
@@ -120,7 +125,7 @@ class TestApiQuestions(unittest.TestCase):
             "description": "Demo description of random topic",
             "tags" : "demotag1 demotag2"
         }
-        postFunction(self,"questions",questiondata)
+        postFunction(self,"questions",questiondata,"")
         retrive_id = getFunction(self,"questions")
         getSpecFunction(self,"questions",retrive_id)
         updateFunction(self,"questions",retrive_id)
@@ -133,7 +138,7 @@ class TestApiQuestions(unittest.TestCase):
         deleteFunction(self,"questions",retrive_id)
 
 class TestApiProject(unittest.TestCase):
-    def test_project_test(self):
+    def test_project_check(self):
         projectdata = {
             "title": "New Project",
             "description": "Demo description of random topic",
@@ -141,7 +146,7 @@ class TestApiProject(unittest.TestCase):
             "plant": "demoplant1 demoplant2",
             "system" : ["Medium","canister","YES","ADA Amozonia","Drogon stone","18x18x15","aquascaping tools"]
         }
-        postFunction(self,"projects",projectdata)
+        postFunction(self,"projects",projectdata,"")
         retrive_id = getFunction(self,"projects")
         getSpecFunction(self,"projects",retrive_id)
         updateFunction(self,"projects",retrive_id)
@@ -152,6 +157,32 @@ class TestApiProject(unittest.TestCase):
         deleteFeature(self,"projects","comm_id",retrive_id,comment_id)
         deleteFeature(self,"projects","post_id",retrive_id,post_id)
         deleteFunction(self,"projects",retrive_id)
+
+class TestApiInfo(unittest.TestCase):
+    def test_info_check(self):
+        disease_data = {
+            "name":"Disease Name",
+            "description": "Disease description on the page",
+            "images": "demoimage1,demoimage2",
+            "identify": "identify1,identify2",
+            "treatment": "treatment1,treatment2"
+        }
+        fish_data = {
+            "name": "Neon Tetra",
+            "description": "nano fish with bright neon blue color",
+            "images": "demoimage1,demoimage2",
+            "qstat": [10,"Easy","Peaceful","68-78F","KH 4-8","pH 5-7","2'","Omnivore","Malaysia","Characidae"]
+        }
+        plant_data = {
+            "name": "Dwarf Hairgrass",
+            "description": "Dwarf Hairgrass is a great plant for beginners and seasoned aquarium keepers alike",
+            "images": "demoimage1,demoimage2",
+            "qstat": [" Moderate"," Moderate","Foreground","70-83F","KH 4-8","pH 6.5-7.5","Runners","4'","USA","Cyperaceae"]
+        }
+        postFunction(self,"info",disease_data,"disease")
+        postFunction(self,"info",fish_data,"fish")
+        postFunction(self,"info",plant_data,"plant")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -229,10 +229,10 @@ def infof():
     documents = [doc for doc in db.info.find({"infotab":"fish"})]
     return dumps({'cursor': documents})
 
-@app.route('/tankover/api/v1.0/info/plants',methods=['GET'])
+@app.route('/tankover/api/v1.0/info/plant',methods=['GET'])
 def infop():
     db = connection.infohub
-    documents = [doc for doc in db.info.find({"infotab":"plants"})]
+    documents = [doc for doc in db.info.find({"infotab":"plant"})]
     return dumps({'cursor': documents})
 
 @app.route('/tankover/api/v1.0/info/<string:info_id>', methods=['GET'])
@@ -254,6 +254,7 @@ def newinfo(dtype):
         ident = request.json['identify'].split(",")
         treat = request.json['treatment'].split(",")
         addNew = {
+                "infotab" : "disease",
                 "name": request.json['name'],
                 "description":request.json.get('description',''),
                 "images": img,
@@ -261,8 +262,9 @@ def newinfo(dtype):
                 "treatment": treat,
                 "crowd opinion": []
             }
-    elif dtype == "fish":
+    if dtype == "fish":
         addNew = {
+                "infotab": "fish",
                 "name": request.json['name'],
                 "overview": request.json.get('description',''),
                 "images":img,
@@ -280,8 +282,9 @@ def newinfo(dtype):
                 },
                 "crowd opinion": []
         }
-    else:
+    if dtype == "plant":
         addNew = {
+                "infotab": "plant",
                 "name":request.json['name'],
                 "overview": request.json['description'],
                 "images":img,
