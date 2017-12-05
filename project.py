@@ -17,6 +17,10 @@ auth = HTTPBasicAuth()
 app = Flask(__name__)
 connection = pymongo.MongoClient("mongodb://localhost")
 
+CLIENT_ID = json.loads(
+    open('client_secrets.json', 'r').read())['web']['client_id']
+APPLICATION_NAME = "tankOverFlow Application"
+
 ##auth
 @auth.get_password
 def get_password(username):
