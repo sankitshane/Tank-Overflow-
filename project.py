@@ -22,6 +22,37 @@ CLIENT_ID = json.loads(
 APPLICATION_NAME = "tankOverFlow Application"
 
 ##auth
+@app.route('/login')
+def login():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in xrange(32))
+    login_session['state'] = state
+
+def create_user():
+    addUser = {
+                "name": login_session['name'],
+                "email": login_session['email'],
+                "picture": login_session['picture']
+            }
+    db = connection.Userhub
+    db.user.insert(addNew)
+
+def getUserInfo(user_id):
+    db = connection.Userhub
+    query = {"_id":user_id}
+    user = db.find_one(query)
+    return user
+
+
+def getUserID(email):
+    db = connection.Userhub
+    query = {"email":email}
+    try:
+        user = db.find_one(query)
+        return user.id
+    except:
+        return None
+
 @auth.get_password
 def get_password(username):
     if username == 'miguel':
